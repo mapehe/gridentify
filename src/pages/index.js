@@ -5,33 +5,81 @@ import "./index.css"
 
 const GRID_SIZE = 5
 
-const Row = (_, j, i) => {
-  const [hovered, setHovered] = useState(false)
-  const toggleHover = () => setHovered(!hovered)
-  return (
-    <>
-      <div
-        id={`ge-${i}-${j}`}
-        onMouseEnter={toggleHover}
-        onMouseLeave={toggleHover}
-        className={"box " + (hovered ? "selected" : "")}
-      >
-        <div class="inner">0</div>
-      </div>
-    </>
-  )
+const box_class = (hovered, last) => {
+  return "box " + (hovered ? "selected " : "") + (last ? "last " : "")
 }
 
-const build_grid = n =>
-  Array.from(Array(n)).map((_, i) => (
-    <div className="row">
-      {Array.from(Array(n)).map((_, j) => Row(_, j, i))}
-    </div>
-  ))
+class Box extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = { hovered: false, last: false, mouseLast: false }
+  }
+
+  enter = () => {
+    if (this.state.hovered) {
+      this.props.parent.handle_last()
+    }
+    this.setState({ hovered: true, last: !this.state.hovered, mouseLast: true })
+  }
+
+  leave = () => {
+    this.setState({ hovered: this.state.last, last: false, mouseLast: false })
+  }
+
+  handle_last = () => {
+    if (this.state.last) {
+      this.setState({ hovered: false, last: false, mouseLast: false })
+    }
+  }
+
+  render() {
+    return (
+      <>
+        <div
+          id={`ge-${this.props.i}-${this.props.j}`}
+          onMouseEnter={this.enter}
+          onMouseLeave={this.leave}
+          className={box_class(this.state.hovered, this.state.last)}
+        >
+          <div className="inner">0</div>
+        </div>
+      </>
+    )
+  }
+}
+
+class Grid extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = { n: 5 }
+  }
+  boxes = []
+  handle_last() {
+    this.boxes.map(e => e.handle_last())
+  }
+  render() {
+    return Array.from(Array(this.props.grid_size)).map((_, i) => (
+      <div className="row">
+        {Array.from(Array(this.props.grid_size)).map((_, j) => (
+          <Box
+            i={i}
+            j={j}
+            parent={this}
+            ref={b => {
+              this.boxes.push(b)
+            }}
+          />
+        ))}
+      </div>
+    ))
+  }
+}
 
 const IndexPage = () => (
   <Layout>
-    <div className="grid">{build_grid(GRID_SIZE)}</div>
+    <div className="grid">
+      <Grid grid_size={5} />
+    </div>
   </Layout>
 )
 
