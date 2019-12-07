@@ -10,6 +10,16 @@
 .box {
   flex: 1 0 auto;
   position: relative;
+  border-width: 1px;
+  border-style: solid;
+  user-select: none;
+  -moz-user-select: none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  -o-user-select: none;
+}
+.selected {
+  background-color: red;
 }
 .box:after {
   content: "";

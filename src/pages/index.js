@@ -1,24 +1,31 @@
-import React from "react"
-import { Link } from "gatsby"
-
+import React, { useState } from "react"
 import Layout from "../components/layout"
-import Image from "../components/image"
-import SEO from "../components/seo"
 import "bootstrap/dist/css/bootstrap.min.css"
 import "./index.css"
 
 const GRID_SIZE = 5
 
+const Row = (_, j, i) => {
+  const [hovered, setHovered] = useState(false)
+  const toggleHover = () => setHovered(!hovered)
+  return (
+    <>
+      <div
+        id={`ge-${i}-${j}`}
+        onMouseEnter={toggleHover}
+        onMouseLeave={toggleHover}
+        className={"box " + (hovered ? "selected" : "")}
+      >
+        <div class="inner">0</div>
+      </div>
+    </>
+  )
+}
+
 const build_grid = n =>
   Array.from(Array(n)).map((_, i) => (
     <div className="row">
-      {Array.from(Array(n)).map((_, j) => (
-        <>
-          <div id={`ge-${i}-${j}`} className="box">
-            <div class="inner">0</div>
-          </div>
-        </>
-      ))}
+      {Array.from(Array(n)).map((_, j) => Row(_, j, i))}
     </div>
   ))
 
