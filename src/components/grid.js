@@ -26,7 +26,9 @@ class Box extends React.Component {
   }
 
   leave = () => {
-    this.setState({ hovered: this.state.hovered, last: false })
+    this.setState({ hovered: this.state.hovered, last: false }, () => {
+      this.props.parent.check_leave()
+    })
   }
   unselect_box = () => {
     this.setState({ hovered: false, last: this.state.last })
@@ -39,6 +41,9 @@ class Box extends React.Component {
       this.setState({ hovered: true, last: true, value: this.state.value })
     }
   }
+  is_last() {
+    return this.state.last
+  }
 
   render() {
     return (
@@ -49,7 +54,7 @@ class Box extends React.Component {
           onMouseLeave={this.leave}
           className={box_class(this.state.hovered, this.state.last)}
         >
-          <div className="inner">0</div>
+          <div className="inner">{this.state.value}</div>
         </div>
       </>
     )
@@ -65,6 +70,17 @@ class Grid extends React.Component {
     this.clear_selection = this.clear_selection.bind(this)
   }
   boxes = []
+  check_leave() {
+    if (
+      !this.boxes
+        .map(e => (e != null ? e.is_last() : null))
+        .filter(e => !(e == null))
+        .reduce((a, b) => a || b, false)
+    ) {
+      this.clear_selection()
+      this.setState({ selection_on: false })
+    }
+  }
   clear_selection() {
     this.boxes.forEach(e => (e != null ? e.unselect_box() : {}))
   }
