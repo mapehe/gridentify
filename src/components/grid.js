@@ -11,12 +11,21 @@ class Box extends React.Component {
   }
 
   enter = () => {
+    const last = this.props.parent.get_last_coords()
     this.props.parent.clear_last()
     this.setState({
       hovered: this.state.hovered,
       last: true,
       value: this.state.value,
     })
+    if (last != null) {
+      const ij = last[0]
+      if (Math.abs(ij.i - this.props.i) + Math.abs(ij.j - this.props.j) > 1) {
+        this.props.parent.clear_selection()
+        this.props.parent.clear_last()
+        return
+      }
+    }
     if (this.props.parent.selection_on()) {
       if (this.state.hovered) {
         this.props.parent.clear_selection()
@@ -27,7 +36,11 @@ class Box extends React.Component {
 
   leave = () => {
     this.setState(
-      { hovered: this.state.hovered, last: false, value: this.state.value },
+      {
+        hovered: this.state.hovered,
+        last: this.state.last,
+        value: this.state.value,
+      },
       () => {
         this.props.parent.check_leave()
       }
@@ -49,6 +62,13 @@ class Box extends React.Component {
       last: false,
       value: this.state.value,
     })
+  }
+  get_last_coords = () => {
+    if (this.state.last) {
+      return { i: this.props.i, j: this.props.j }
+    } else {
+      return null
+    }
   }
   select_if_last = () => {
     if (this.state.last) {
@@ -143,6 +163,12 @@ class Grid extends React.Component {
           .filter(e => e != null)
       ).size == 2
     )
+  }
+  get_last_coords() {
+    const arr = this.boxes
+      .map(e => (e != null ? e.get_last_coords() : null))
+      .filter(e => e != null)
+    return arr.length > 0 ? arr : null
   }
   touchUp() {
     const sum = this.boxes
