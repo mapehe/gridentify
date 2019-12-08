@@ -7,7 +7,7 @@ const box_class = (hovered, last) => {
 class Box extends React.Component {
   constructor(props) {
     super(props)
-    this.state = { hovered: false, last: false, value: 0 }
+    this.state = { hovered: false, last: false, value: this.random_value() }
   }
 
   enter = () => {
@@ -26,15 +26,29 @@ class Box extends React.Component {
   }
 
   leave = () => {
-    this.setState({ hovered: this.state.hovered, last: false }, () => {
-      this.props.parent.check_leave()
-    })
+    this.setState(
+      { hovered: this.state.hovered, last: false, value: this.state.value },
+      () => {
+        this.props.parent.check_leave()
+      }
+    )
+  }
+  random_value = () => {
+    return Math.ceil(3 * Math.random())
   }
   unselect_box = () => {
-    this.setState({ hovered: false, last: this.state.last })
+    this.setState({
+      hovered: false,
+      last: this.state.last,
+      value: this.state.value,
+    })
   }
   clear_last = () => {
-    this.setState({ hovered: this.state.hovered, last: false })
+    this.setState({
+      hovered: this.state.hovered,
+      last: false,
+      value: this.state.value,
+    })
   }
   select_if_last = () => {
     if (this.state.last) {
@@ -43,6 +57,30 @@ class Box extends React.Component {
   }
   is_last() {
     return this.state.last
+  }
+  update_value(sum) {
+    if (this.state.hovered) {
+      if (this.state.last) {
+        this.setState({
+          hovered: false,
+          last: this.state.last,
+          value: sum,
+        })
+      } else {
+        this.setState({
+          hovered: false,
+          last: this.state.last,
+          value: this.random_value(),
+        })
+      }
+    }
+  }
+  get_value() {
+    if (this.state.hovered) {
+      return this.state.value
+    } else {
+      return 0
+    }
   }
 
   render() {
@@ -90,12 +128,18 @@ class Grid extends React.Component {
   selection_on() {
     return this.state.selection_on
   }
+  update_boxes(sum) {
+    this.boxes.forEach(e => (e != null ? e.update_value(sum) : {}))
+  }
   touchDown() {
     this.boxes.forEach(e => (e != null ? e.select_if_last() : {}))
     this.setState({ selection_on: true })
   }
   touchUp() {
-    this.clear_selection()
+    const sum = this.boxes
+      .map(e => (e != null ? e.get_value() : 0))
+      .reduce((a, b) => a + b, 0)
+    this.update_boxes(sum)
     this.setState({ selection_on: false })
   }
   render() {
