@@ -7,16 +7,21 @@ const box_class = (hovered, last) => {
 class Box extends React.Component {
   constructor(props) {
     super(props)
-    this.state = { hovered: false, last: false }
+    this.state = { hovered: false, last: false, value: 0 }
   }
 
   enter = () => {
-    this.setState({ hovered: this.state.hovered, last: true })
+    this.props.parent.clear_last()
+    this.setState({
+      hovered: this.state.hovered,
+      last: true,
+      value: this.state.value,
+    })
     if (this.props.parent.selection_on()) {
       if (this.state.hovered) {
         this.props.parent.clear_selection()
       }
-      this.setState({ hovered: true, last: true })
+      this.setState({ hovered: true, last: true, value: this.state.value })
     }
   }
 
@@ -26,9 +31,12 @@ class Box extends React.Component {
   unselect_box = () => {
     this.setState({ hovered: false, last: this.state.last })
   }
+  clear_last = () => {
+    this.setState({ hovered: this.state.hovered, last: false })
+  }
   select_if_last = () => {
     if (this.state.last) {
-      this.setState({ hovered: true, last: true })
+      this.setState({ hovered: true, last: true, value: this.state.value })
     }
   }
 
@@ -59,6 +67,9 @@ class Grid extends React.Component {
   boxes = []
   clear_selection() {
     this.boxes.forEach(e => (e != null ? e.unselect_box() : {}))
+  }
+  clear_last() {
+    this.boxes.forEach(e => (e != null ? e.clear_last() : {}))
   }
   selection_on() {
     return this.state.selection_on
