@@ -135,11 +135,24 @@ class Grid extends React.Component {
     this.boxes.forEach(e => (e != null ? e.select_if_last() : {}))
     this.setState({ selection_on: true })
   }
+  validate_selection() {
+    return (
+      new Set(
+        this.boxes
+          .map(e => (e != null ? e.get_value() : null))
+          .filter(e => e != null)
+      ).size == 2
+    )
+  }
   touchUp() {
     const sum = this.boxes
       .map(e => (e != null ? e.get_value() : 0))
       .reduce((a, b) => a + b, 0)
-    this.update_boxes(sum)
+    if (this.validate_selection()) {
+      this.update_boxes(sum)
+    } else {
+      this.clear_selection()
+    }
     this.setState({ selection_on: false })
   }
   render() {
