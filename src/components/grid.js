@@ -161,7 +161,7 @@ class Grid extends React.Component {
         this.boxes
           .map(e => (e != null ? e.get_value() : null))
           .filter(e => e != null)
-      ).size == 2
+      ).size === 2
     )
   }
   get_last_coords() {
