@@ -18,6 +18,8 @@
   -webkit-user-select: none;
   -o-user-select: none;
 }
+.last {
+}
 .selected {
   background-color: red;
 }
