@@ -38,7 +38,7 @@ class Box extends React.Component {
     this.setState(
       {
         hovered: this.state.hovered,
-        last: this.state.last,
+        last: false,
         value: this.state.value,
       },
       () => {
