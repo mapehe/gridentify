@@ -34,6 +34,30 @@ class Box extends React.Component {
     }
   }
 
+  mobile_enter = () => {
+    const last = this.props.parent.get_last_coords()
+    this.props.parent.clear_last()
+    this.setState({
+      hovered: this.state.hovered,
+      last: true,
+      value: this.state.value,
+    })
+    if (last != null) {
+      const ij = last[0]
+      if (Math.abs(ij.i - this.props.i) + Math.abs(ij.j - this.props.j) > 1) {
+        this.props.parent.clear_last()
+        this.props.parent.clear_selection()
+        return
+      }
+    }
+    if (this.props.parent.selection_on()) {
+      if (this.state.hovered) {
+        this.props.parent.clear_selection()
+      }
+      this.setState({ hovered: true, last: true, value: this.state.value })
+    }
+  }
+
   leave = () => {
     this.setState(
       {
@@ -46,6 +70,13 @@ class Box extends React.Component {
       }
     )
   }
+  is_this_element(id) {
+    const ij = id
+      .split("-")
+      .slice(1)
+      .map(x => Number(x))
+    return this.props.i === ij[0] && this.props.j === ij[1]
+  }
   random_value = () => {
     return Math.ceil(3 * Math.random())
   }
@@ -57,11 +88,16 @@ class Box extends React.Component {
     })
   }
   clear_last = () => {
-    this.setState({
-      hovered: this.state.hovered,
-      last: false,
-      value: this.state.value,
-    })
+    this.setState(
+      {
+        hovered: this.state.hovered,
+        last: false,
+        value: this.state.value,
+      },
+      () => {
+        this.render()
+      }
+    )
   }
   get_last_coords = () => {
     if (this.state.last) {
@@ -107,11 +143,15 @@ class Box extends React.Component {
     return (
       <>
         <div
+          id={`ge-${this.props.i}-${this.props.j}`}
           onMouseEnter={this.enter}
+          onClick={this.enter}
           onMouseLeave={this.leave}
           className={box_class(this.state.hovered, this.state.last)}
         >
-          <div className="inner">{this.state.value}</div>
+          <div id={`gec-${this.props.i}-${this.props.j}`} className="inner">
+            {this.state.value}
+          </div>
         </div>
       </>
     )

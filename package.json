@@ -37,7 +37,7 @@
     "serve": "gatsby serve",
     "clean": "gatsby clean",
     "test": "echo \"Write tests! -> https://gatsby.dev/unit-testing\" && exit 1",
-    "prettier": "prettier --write src/**/*.{js,css}"
+    "prettier": "prettier --write src/**/*.{js,css} && prettier --write src/**/**/*.{js,css}"
   },
   "repository": {
     "type": "git",
