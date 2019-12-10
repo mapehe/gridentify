@@ -1,4 +1,5 @@
 import React from "react"
+import { isMobile } from "react-device-detect"
 
 const box_class = (hovered, last) => {
   return "box " + (hovered ? "selected " : "") + (last ? "last " : "")
@@ -151,8 +152,18 @@ class Box extends React.Component {
       <>
         <div
           id={`ge-${this.props.i}-${this.props.j}`}
-          onMouseEnter={this.enter}
-          onClick={this.enter}
+          onMouseEnter={() => {
+            if (!isMobile) {
+              this.enter()
+            } else {
+            }
+          }}
+          onClick={() => {
+            if (!isMobile) {
+              this.enter()
+            } else {
+            }
+          }}
           onMouseLeave={this.leave}
           className={box_class(this.state.hovered, this.state.last)}
         >
