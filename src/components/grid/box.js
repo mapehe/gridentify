@@ -35,6 +35,7 @@ class Box extends React.Component {
       }
     }
     if (this.props.parent.selection_on()) {
+      this.props.parent.record_selection(this)
       if (this.state.hovered) {
         this.props.parent.clear_selection()
       }
@@ -62,6 +63,7 @@ class Box extends React.Component {
       if (this.state.hovered) {
         this.props.parent.clear_selection()
       }
+      this.props.parent.record_selection(this)
       this.setState({ hovered: true, last: true, value: this.state.value })
     }
   }
@@ -116,6 +118,7 @@ class Box extends React.Component {
   }
   select_if_last = () => {
     if (this.state.last) {
+      this.props.parent.record_selection(this)
       this.setState({ hovered: true, last: true, value: this.state.value })
     }
   }

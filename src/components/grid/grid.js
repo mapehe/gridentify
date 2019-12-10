@@ -12,6 +12,9 @@ class Grid extends React.Component {
     this.touchEnd = this.touchEnd.bind(this)
   }
   boxes = []
+  selected = []
+  moves = []
+  initial_status = null
   check_leave() {
     if (
       !this.boxes
@@ -28,6 +31,9 @@ class Grid extends React.Component {
   }
   clear_last() {
     this.boxes.forEach(e => (e != null ? e.clear_last() : {}))
+  }
+  record_selection(box) {
+    this.selected.push([box.props.i, box.props.j])
   }
   selection_on() {
     return this.state.selection_on
@@ -59,13 +65,22 @@ class Grid extends React.Component {
     return arr.length > 0 ? arr : null
   }
   touchUp(clear_last) {
+    if (this.initial_status === null) {
+      this.initial_status = this.get_state()
+    }
     const sum = this.boxes
       .map(e => (e != null ? e.get_value() : 0))
       .reduce((a, b) => a + b, 0)
     if (this.validate_selection()) {
+      if (this.selected.length > 0) {
+        this.moves.push(this.selected)
+      }
       this.update_boxes(sum).then(() => {
         if (this.check_game_over()) {
-          this.props.parent.send_score()
+          this.props.parent.send_score({
+            initial_state: this.initial_status,
+            moves: this.moves,
+          })
           this.boxes.filter(e => e != null).forEach(e => e.init_value())
           this.props.parent.score.reset()
         }
@@ -80,13 +95,15 @@ class Grid extends React.Component {
       this.clear_selection()
     }
 
+    this.selected = []
+
     this.setState({ selection_on: false }, () => {
       if (clear_last) {
         this.clear_last()
       }
     })
   }
-  check_game_over() {
+  get_state() {
     var vals = {}
     const range = Array.from(Array(5)).map((_, i) => i)
     for (const i of range) {
@@ -95,21 +112,26 @@ class Grid extends React.Component {
           .filter(e => e != null)
           .filter(e => e.props.i === i && e.props.j === j)
           .map(e => e.state.value)[0]
-        vals[i.toString() + "/" + j.toString()] = val
+        vals[i.toString() + "-" + j.toString()] = val
       }
     }
+    return vals
+  }
+  check_game_over() {
+    const vals = this.get_state()
     var is_move = false
+    const range = Array.from(Array(5)).map((_, i) => i)
     for (const i of range) {
       for (const j of range) {
         var neighbor = false
 
-        const a = vals[i.toString() + "/" + j.toString()]
+        const a = vals[i.toString() + "-" + j.toString()]
         for (const dx of [-1, 0, 1]) {
           for (const dy of [-1, 0, 1]) {
             if ((dx !== 0 && dy !== 0) || dx === dy) {
               continue
             } else {
-              const b = vals[(i + dx).toString() + "/" + (j + dy).toString()]
+              const b = vals[(i + dx).toString() + "-" + (j + dy).toString()]
               neighbor = a === b || neighbor
             }
           }
@@ -155,7 +177,9 @@ class Grid extends React.Component {
           last: true,
           value: b.state.value,
         },
-        this.touchDown()
+        () => {
+          this.touchDown()
+        }
       )
     }
   }

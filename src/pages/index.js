@@ -22,10 +22,12 @@ class IndexPage extends React.Component {
   }
   componentDidMount = () => {
     const socket = socketIOClient(this.state.endpoint)
-    this.send_score = () => {
+    this.send_score = input => {
       const data = {
         score: this.score.state.value,
         username: this.state.username,
+        initial_state: input.initial_state,
+        moves: input.moves,
       }
       this.receive_score(data)
       socket.emit("score", data)
