@@ -8,6 +8,9 @@ class Score extends React.Component {
   add_score(score) {
     this.setState({ value: this.state.value + Number(score) })
   }
+  reset() {
+    this.setState({ value: 0 })
+  }
   render() {
     return <p>{this.state.value}</p>
   }

@@ -65,6 +65,10 @@ class Grid extends React.Component {
         1
       ) {
         this.props.parent.increase_score(sum)
+        if (this.check_game_over()) {
+          this.boxes.filter(e => e != null).forEach(e => e.random_value())
+          this.props.parent.score.reset()
+        }
       }
     } else {
       this.clear_selection()
@@ -75,6 +79,40 @@ class Grid extends React.Component {
         this.clear_last()
       }
     })
+  }
+  check_game_over() {
+    var vals = {}
+    const range = Array.from(Array(5)).map((_, i) => i)
+    for (const i of range) {
+      for (const j of range) {
+        const val = this.boxes
+          .filter(e => e != null)
+          .filter(e => e.props.i === i && e.props.j === j)
+          .map(e => e.state.value)[0]
+        vals[i.toString() + "-" + j.toString()] = val
+      }
+    }
+    var game_over = true
+    for (var h of range) {
+      for (var k of range) {
+        var has_neighbor = false
+        for (var dx of [-1, 1]) {
+          for (var dy of [-1, 1]) {
+            if (dx === dy) {
+              continue
+            } else {
+              has_neighbor =
+                has_neighbor ||
+                vals[h.toString() + "-" + k.toString()] ===
+                  vals[(h + dx).toString() + "-" + (k + dy).toString()]
+            }
+          }
+        }
+        console.log([h, k, has_neighbor])
+        game_over = game_over && !has_neighbor
+      }
+    }
+    console.log(game_over)
   }
   boxFromEvent(e) {
     const p = [e.touches[0].clientX, e.touches[0].clientY]
