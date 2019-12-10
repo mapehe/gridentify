@@ -10,7 +10,7 @@ class ScoreFeed extends React.Component {
   }
 
   render() {
-    return this.state.scores.map((score, index) => {})
+    return this.state.scores.map((score, index) => null)
   }
 }
 
