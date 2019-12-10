@@ -60,6 +60,7 @@ class Grid extends React.Component {
       .reduce((a, b) => a + b, 0)
     if (this.validate_selection()) {
       this.update_boxes(sum)
+      this.props.parent.increase_score(sum)
     } else {
       this.clear_selection()
     }

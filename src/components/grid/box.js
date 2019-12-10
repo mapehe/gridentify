@@ -10,6 +10,13 @@ class Box extends React.Component {
     this.state = { hovered: false, last: false, value: this.random_value() }
   }
 
+  init_value = () => {
+    this.setState({
+      hovered: this.state.hovered,
+      last: this.state.last,
+      value: this.random_value(),
+    })
+  }
   enter = () => {
     const last = this.props.parent.get_last_coords()
     this.props.parent.clear_last()
