@@ -131,6 +131,7 @@ class Grid extends React.Component {
         onTouchMove={e => this.touchMove(e)}
         onTouchStart={this.touchStart}
         onTouchEnd={this.touchEnd}
+        key={"a" + i.toString()}
       >
         <div className="row">
           {Array.from(Array(this.props.grid_size)).map((_, j) => (
@@ -141,6 +142,7 @@ class Grid extends React.Component {
               ref={b => {
                 this.boxes.push(b)
               }}
+              key={i.toString() + "-" + j.toString()}
             />
           ))}
         </div>

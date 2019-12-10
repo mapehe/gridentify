@@ -8,9 +8,6 @@ import Score from "../components/score"
 const GRID_SIZE = 5
 
 class IndexPage extends React.Component {
-  constructor(props) {
-    super(props)
-  }
   score = null
   increase_score(score) {
     if (this.score == null) {
