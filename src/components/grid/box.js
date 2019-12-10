@@ -125,16 +125,26 @@ class Box extends React.Component {
   update_value(sum) {
     if (this.state.hovered) {
       if (this.state.last) {
-        this.setState({
-          hovered: false,
-          last: this.state.last,
-          value: sum,
+        return new Promise(resolve => {
+          this.setState(
+            {
+              hovered: false,
+              last: this.state.last,
+              value: sum,
+            },
+            resolve
+          )
         })
       } else {
-        this.setState({
-          hovered: false,
-          last: this.state.last,
-          value: this.random_value(),
+        return new Promise(resolve => {
+          this.setState(
+            {
+              hovered: false,
+              last: this.state.last,
+              value: this.random_value(),
+            },
+            resolve
+          )
         })
       }
     }

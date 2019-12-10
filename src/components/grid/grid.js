@@ -33,7 +33,11 @@ class Grid extends React.Component {
     return this.state.selection_on
   }
   update_boxes(sum) {
-    this.boxes.forEach(e => (e != null ? e.update_value(sum) : {}))
+    return Promise.all(
+      this.boxes
+        .map(e => (e != null ? e.update_value(sum) : Promise.resolve(1)))
+        .filter(e => e != undefined)
+    )
   }
   touchDown(event) {
     this.boxes.forEach(e => (e != null ? e.select_if_last() : {}))
@@ -59,16 +63,17 @@ class Grid extends React.Component {
       .map(e => (e != null ? e.get_value() : 0))
       .reduce((a, b) => a + b, 0)
     if (this.validate_selection()) {
-      this.update_boxes(sum)
+      this.update_boxes(sum).then(() => {
+        if (this.check_game_over()) {
+          this.boxes.filter(e => e != null).forEach(e => e.init_value())
+          this.props.parent.score.reset()
+        }
+      })
       if (
         this.boxes.filter(e => e != null).filter(e => e.state.hovered).length >
         1
       ) {
         this.props.parent.increase_score(sum)
-        if (this.check_game_over()) {
-          this.boxes.filter(e => e != null).forEach(e => e.random_value())
-          this.props.parent.score.reset()
-        }
       }
     } else {
       this.clear_selection()
@@ -89,30 +94,29 @@ class Grid extends React.Component {
           .filter(e => e != null)
           .filter(e => e.props.i === i && e.props.j === j)
           .map(e => e.state.value)[0]
-        vals[i.toString() + "-" + j.toString()] = val
+        vals[i.toString() + "/" + j.toString()] = val
       }
     }
-    var game_over = true
-    for (var h of range) {
-      for (var k of range) {
-        var has_neighbor = false
-        for (var dx of [-1, 1]) {
-          for (var dy of [-1, 1]) {
-            if (dx === dy) {
+    var is_move = false
+    for (const i of range) {
+      for (const j of range) {
+        var neighbor = false
+
+        const a = vals[i.toString() + "/" + j.toString()]
+        for (const dx of [-1, 0, 1]) {
+          for (const dy of [-1, 0, 1]) {
+            if ((dx != 0 && dy != 0) || dx == dy) {
               continue
             } else {
-              has_neighbor =
-                has_neighbor ||
-                vals[h.toString() + "-" + k.toString()] ===
-                  vals[(h + dx).toString() + "-" + (k + dy).toString()]
+              const b = vals[(i + dx).toString() + "/" + (j + dy).toString()]
+              neighbor = a === b || neighbor
             }
           }
         }
-        console.log([h, k, has_neighbor])
-        game_over = game_over && !has_neighbor
+        is_move = is_move || neighbor
       }
     }
-    console.log(game_over)
+    return !is_move
   }
   boxFromEvent(e) {
     const p = [e.touches[0].clientX, e.touches[0].clientY]
