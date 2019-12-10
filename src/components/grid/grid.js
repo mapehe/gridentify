@@ -35,8 +35,8 @@ class Grid extends React.Component {
   update_boxes(sum) {
     return Promise.all(
       this.boxes
-        .map(e => (e != null ? e.update_value(sum) : Promise.resolve(1)))
-        .filter(e => e != undefined)
+        .map(e => (e !== null ? e.update_value(sum) : Promise.resolve(1)))
+        .filter(e => e !== undefined)
     )
   }
   touchDown(event) {
@@ -105,7 +105,7 @@ class Grid extends React.Component {
         const a = vals[i.toString() + "/" + j.toString()]
         for (const dx of [-1, 0, 1]) {
           for (const dy of [-1, 0, 1]) {
-            if ((dx != 0 && dy != 0) || dx == dy) {
+            if ((dx !== 0 && dy !== 0) || dx === dy) {
               continue
             } else {
               const b = vals[(i + dx).toString() + "/" + (j + dy).toString()]
