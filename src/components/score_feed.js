@@ -2,6 +2,8 @@ import React from "react"
 import Container from "react-bootstrap/Container"
 import Col from "react-bootstrap/Col"
 import Row from "react-bootstrap/Row"
+import Card from "react-bootstrap/Card"
+import ListGroup from "react-bootstrap/ListGroup"
 import "./score_feed.css"
 import { isMobile } from "react-device-detect"
 
@@ -21,10 +23,9 @@ class TopScoreElement extends React.Component {
   render() {
     if (!isMobile) {
       return (
-        <div style={{ marginBottom: "15px" }}>
-          <p style={{ margin: "0" }}>{this.props.username}</p>
-          <p style={{ margin: "0" }}>{this.props.score}</p>
-        </div>
+        <ListGroup.Item>
+          {this.props.username} {this.props.score}
+        </ListGroup.Item>
       )
     } else {
       return (
@@ -39,7 +40,14 @@ class TopScoreElement extends React.Component {
 class RealTimeScoreFeed extends React.Component {
   render() {
     return (
-      <div className="realTimeScoreFeed scoreFeed">{this.props.children}</div>
+      <>
+        <Card>
+          <Card.Header>Score Feed</Card.Header>
+          <Card.Body style={{ height: "60vh" }} className="overflow-auto">
+            {this.props.children}
+          </Card.Body>
+        </Card>
+      </>
     )
   }
 }
@@ -47,9 +55,12 @@ class RealTimeScoreFeed extends React.Component {
 class TopScoreFeed extends React.Component {
   render() {
     return (
-      <div className="scoreFeed" style={{ marginBottom: "40px" }}>
-        {this.props.children}
-      </div>
+      <>
+        <Card>
+          <Card.Header>{this.props.title}</Card.Header>
+          <ListGroup>{this.props.children}</ListGroup>
+        </Card>
+      </>
     )
   }
 }
@@ -69,11 +80,8 @@ class ScoreFeed extends React.Component {
 
   feeds() {
     return (
-      <>
+      <Row>
         <Col sm={5}>
-          <div className="scoreFeedTitle">
-            <b>Score feed</b>
-          </div>
           <RealTimeScoreFeed>
             {this.state.scores
               .map((score, index) => (
@@ -87,71 +95,28 @@ class ScoreFeed extends React.Component {
           </RealTimeScoreFeed>
         </Col>
         <Col>
-          {!isMobile ? (
-            <Row>
-              <Col>
-                <div className="scoreFeedTitle">
-                  <b>Daily high</b>
-                  <TopScoreFeed>
-                    {this.state.scores.slice(0, 5).map((score, index) => (
-                      <TopScoreElement
-                        username={score.username}
-                        score={score.score}
-                        index={index}
-                        key={"daily-" + index.toString()}
-                      />
-                    ))}
-                  </TopScoreFeed>
-                </div>
-              </Col>
-              <Col>
-                <div className="scoreFeedTitle">
-                  <b>All time high</b>
-                </div>
-                <TopScoreFeed>
-                  {this.state.scores.slice(0, 5).map((score, index) => (
-                    <TopScoreElement
-                      username={score.username}
-                      score={score.score}
-                      index={index}
-                      key={"alltime-" + index.toString()}
-                    />
-                  ))}
-                </TopScoreFeed>
-              </Col>
-            </Row>
-          ) : (
-            <>
-              <div className="scoreFeedTitle">
-                <b>Today's high</b>
-                <TopScoreFeed>
-                  {this.state.scores.slice(0, 5).map((score, index) => (
-                    <TopScoreElement
-                      username={score.username}
-                      score={score.score}
-                      index={index}
-                      key={"daily-" + index.toString()}
-                    />
-                  ))}
-                </TopScoreFeed>
-              </div>
-              <div className="scoreFeedTitle">
-                <b>All time high</b>
-              </div>
-              <TopScoreFeed>
-                {this.state.scores.slice(0, 5).map((score, index) => (
-                  <TopScoreElement
-                    username={score.username}
-                    score={score.score}
-                    index={index}
-                    key={"alltime-" + index.toString()}
-                  />
-                ))}
-              </TopScoreFeed>
-            </>
-          )}
+          <TopScoreFeed title="Daily High">
+            {this.state.scores.slice(0, 5).map((score, index) => (
+              <TopScoreElement
+                username={score.username}
+                score={score.score}
+                index={index}
+                key={"daily-" + index.toString()}
+              />
+            ))}
+          </TopScoreFeed>
+          <TopScoreFeed title="All Time High">
+            {this.state.scores.slice(0, 5).map((score, index) => (
+              <TopScoreElement
+                username={score.username}
+                score={score.score}
+                index={index}
+                key={"alltime-" + index.toString()}
+              />
+            ))}
+          </TopScoreFeed>
         </Col>
-      </>
+      </Row>
     )
   }
 
@@ -163,7 +128,7 @@ class ScoreFeed extends React.Component {
             className="scoreContainer"
             style={{ marginTop: "0", paddingLeft: "30px" }}
           >
-            <Row>{this.feeds()}</Row>
+            {this.feeds()}
           </Container>
         </>
       )

@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css?family=Lilita+One&display=swap");
+@import url("https://fonts.googleapis.com/css?family=Lilita+One|Source+Sans+Pro&display=swap");
 
 .grid {
   margin: 0 auto;
@@ -71,4 +71,9 @@
 }
 
 .scoreFeedTitle {
+  font-family: "Source Sans Pro", sans-serif;
+}
+
+.font {
+  font-family: "Source Sans Pro", sans-serif;
 }
