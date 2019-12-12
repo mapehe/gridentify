@@ -38,12 +38,36 @@ class TopScoreElement extends React.Component {
 }
 
 class RealTimeScoreFeed extends React.Component {
+  ref = null
+  constructor(props) {
+    super(props)
+    this.state = {
+      height: null,
+    }
+  }
+  componentDidMount() {
+    const height = this.ref.clientHeight
+    this.setState({
+      height: height,
+    })
+    console.log(height)
+  }
   render() {
     return (
       <>
-        <Card>
+        <Card style={{ height: "100%" }}>
           <Card.Header>Score Feed</Card.Header>
-          <Card.Body style={{ height: "60vh" }} className="overflow-auto">
+          <Card.Body
+            ref={b => {
+              this.ref = b
+            }}
+            style={
+              this.state.height != null
+                ? { maxHeight: this.state.height, overlfow: "hidden" }
+                : {}
+            }
+            className="overflow-auto"
+          >
             {this.props.children}
           </Card.Body>
         </Card>
@@ -68,55 +92,64 @@ class TopScoreFeed extends React.Component {
 class ScoreFeed extends React.Component {
   constructor(props) {
     super(props)
-    this.state = { scores: [], daily_top: Array(5), all_top: Array(5) }
+    this.state = {
+      scores: [],
+      daily_top: [...Array(5).keys()].map(e => {
+        return { username: "", score: "0" }
+      }),
+      all_top: [...Array(5).keys()].map(e => {
+        return { username: "", score: "0" }
+      }),
+    }
   }
   new_score(data) {
     this.setState({
       scores: this.state.scores.concat([data]),
-      daily_top: this.daily_top,
-      all_top: this.all_top,
+      daily_top: this.state.daily_top,
+      all_top: this.state.all_top,
     })
   }
-
   feeds() {
     return (
-      <Row>
-        <Col sm={5}>
-          <RealTimeScoreFeed>
-            {this.state.scores
-              .map((score, index) => (
-                <RealTimeScoreElement
+      <Container>
+        <Row>
+          <Col sm={5} style={!isMobile ? { paddingRight: "0" } : {}}>
+            <RealTimeScoreFeed>
+              {this.state.scores
+                .map((score, index) => (
+                  <RealTimeScoreElement
+                    username={score.username}
+                    score={score.score}
+                    key={"realtime-" + index.toString()}
+                  />
+                ))
+                .reverse()}
+            </RealTimeScoreFeed>
+          </Col>
+          <Col style={!isMobile ? { paddingLeft: "0" } : {}}>
+            <TopScoreFeed title="Daily High">
+              {this.state.daily_top.slice(0, 5).map((score, index) => (
+                <TopScoreElement
                   username={score.username}
                   score={score.score}
-                  key={"realtime-" + index.toString()}
+                  index={index}
+                  key={"daily-" + index.toString()}
                 />
-              ))
-              .reverse()}
-          </RealTimeScoreFeed>
-        </Col>
-        <Col>
-          <TopScoreFeed title="Daily High">
-            {this.state.scores.slice(0, 5).map((score, index) => (
-              <TopScoreElement
-                username={score.username}
-                score={score.score}
-                index={index}
-                key={"daily-" + index.toString()}
-              />
-            ))}
-          </TopScoreFeed>
-          <TopScoreFeed title="All Time High">
-            {this.state.scores.slice(0, 5).map((score, index) => (
-              <TopScoreElement
-                username={score.username}
-                score={score.score}
-                index={index}
-                key={"alltime-" + index.toString()}
-              />
-            ))}
-          </TopScoreFeed>
-        </Col>
-      </Row>
+              ))}
+            </TopScoreFeed>
+            <TopScoreFeed title="All Time High">
+              {this.state.all_top.slice(0, 5).map((score, index) => (
+                <TopScoreElement
+                  username={score.username}
+                  score={score.score}
+                  index={index}
+                  key={"alltime-" + index.toString()}
+                />
+              ))}
+            </TopScoreFeed>
+          </Col>
+        </Row>
+      </Container>
     )
   }
 
