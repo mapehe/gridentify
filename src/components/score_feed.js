@@ -21,19 +21,11 @@ class RealTimeScoreElement extends React.Component {
 
 class TopScoreElement extends React.Component {
   render() {
-    if (!isMobile) {
-      return (
-        <ListGroup.Item>
-          {this.props.username} {this.props.score}
-        </ListGroup.Item>
-      )
-    } else {
-      return (
-        <p>
-          <span>{this.props.username}</span> <span>{this.props.score}</span>
-        </p>
-      )
-    }
+    return (
+      <ListGroup.Item>
+        {this.props.username} {this.props.score}
+      </ListGroup.Item>
+    )
   }
 }
 
@@ -62,8 +54,10 @@ class RealTimeScoreFeed extends React.Component {
               this.ref = b
             }}
             style={
-              this.state.height != null
+              this.state.height != null && !isMobile
                 ? { maxHeight: this.state.height, overlfow: "hidden" }
+                : isMobile
+                ? { height: "60vh" }
                 : {}
             }
             className="overflow-auto"
@@ -111,9 +105,16 @@ class ScoreFeed extends React.Component {
   }
   feeds() {
     return (
-      <Container>
+      <Container style={isMobile ? { padding: "0" } : {}}>
         <Row>
-          <Col sm={5} style={!isMobile ? { paddingRight: "0" } : {}}>
+          <Col
+            sm={5}
+            style={
+              !isMobile
+                ? { paddingRight: "0", paddingLeft: "0" }
+                : { padding: "0" }
+            }
+          >
             <RealTimeScoreFeed>
               {this.state.scores
                 .map((score, index) => (
@@ -126,7 +127,7 @@ class ScoreFeed extends React.Component {
                 .reverse()}
             </RealTimeScoreFeed>
           </Col>
-          <Col style={!isMobile ? { paddingLeft: "0" } : {}}>
+          <Col style={!isMobile ? { paddingLeft: "0" } : { padding: "0" }}>
             <TopScoreFeed title="Daily High">
               {this.state.daily_top.slice(0, 5).map((score, index) => (
                 <TopScoreElement
@@ -168,7 +169,9 @@ class ScoreFeed extends React.Component {
     } else {
       return (
         <>
-          <Container className="scoreContainer">{this.feeds()}</Container>
+          <Container className="scoreContainer" style={{ padding: "0" }}>
+            {this.feeds()}
+          </Container>
         </>
       )
     }
