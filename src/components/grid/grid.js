@@ -5,6 +5,7 @@ class Grid extends React.Component {
   constructor(props) {
     super(props)
     this.state = { selection_on: false }
+    this.seed = Date.now()
     this.touchDown = this.touchDown.bind(this)
     this.touchUp = this.touchUp.bind(this)
     this.clear_selection = this.clear_selection.bind(this)
@@ -15,6 +16,7 @@ class Grid extends React.Component {
   selected = []
   moves = []
   initial_status = null
+  seed = null
   check_leave() {
     if (
       !this.boxes
@@ -38,10 +40,25 @@ class Grid extends React.Component {
   selection_on() {
     return this.state.selection_on
   }
-  update_boxes(sum) {
+  next_pseudorandom() {
+    const out = (this.seed = (this.seed * 16807) % 2147483647)
+    if (this._seed <= 0) this._seed += 2147483646
+    return (out % 3) + 1
+  }
+  random_array(n) {
+    var out = []
+    for (const i in Array(n).fill(1)) {
+      out.push(this.next_pseudorandom())
+    }
+    return out
+  }
+  update_boxes(sum, ids) {
+    const vals = this.random_array(ids.length - 1)
     return Promise.all(
       this.boxes
-        .map(e => (e !== null ? e.update_value(sum) : Promise.resolve(1)))
+        .map(e =>
+          e !== null ? e.update_value(sum, ids, vals) : Promise.resolve(1)
+        )
         .filter(e => e !== undefined)
     )
   }
@@ -75,14 +92,16 @@ class Grid extends React.Component {
       if (this.selected.length > 0) {
         this.moves.push(this.selected)
       }
-      this.update_boxes(sum).then(() => {
+      this.update_boxes(sum, this.selected).then(() => {
         if (this.check_game_over()) {
           this.props.parent.send_score({
             initial_state: this.initial_status,
             moves: this.moves,
+            seed: this.seed,
           })
           this.boxes.filter(e => e != null).forEach(e => e.init_value())
           this.props.parent.score.reset()
+          this.seed = Date.now()
         }
       })
       if (

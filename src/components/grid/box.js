@@ -125,8 +125,13 @@ class Box extends React.Component {
   is_last() {
     return this.state.last
   }
-  update_value(sum) {
+  update_value(sum, ids, vals) {
     if (this.state.hovered) {
+      const ind = ids
+        .map(e => e[0] == this.props.i && e[1] == this.props.j)
+        .indexOf(true)
+      const val = vals[ind]
+
       if (this.state.last) {
         return new Promise(resolve => {
           this.setState(
@@ -144,7 +149,7 @@ class Box extends React.Component {
             {
               hovered: false,
               last: this.state.last,
-              value: this.random_value(),
+              value: val,
             },
             resolve
           )

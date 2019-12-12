@@ -28,6 +28,7 @@ class IndexPage extends React.Component {
         username: this.state.username,
         initial_state: input.initial_state,
         moves: input.moves,
+        seed: input.seed,
       }
       this.receive_score(data)
       socket.emit("score", data)
