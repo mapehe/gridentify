@@ -82,39 +82,45 @@ class Grid extends React.Component {
     return arr.length > 0 ? arr : null
   }
   touchUp(clear_last) {
-    if (this.initial_status === null) {
-      this.initial_status = this.get_state()
-    }
-    const sum = this.boxes
-      .map(e => (e != null ? e.get_value() : 0))
-      .reduce((a, b) => a + b, 0)
-    if (this.validate_selection()) {
-      if (this.selected.length > 0) {
-        this.moves.push(this.selected)
-      }
-      this.update_boxes(sum, this.selected).then(() => {
-        if (this.check_game_over()) {
+    if (
+      this.boxes.filter(e => e != null).filter(e => e.state.hovered).length > 1
+    ) {
+      const sum = this.boxes
+        .map(e => (e != null ? e.get_value() : 0))
+        .reduce((a, b) => a + b, 0)
+      this.props.parent.increase_score(sum).then(() => {
+        if (this.initial_status === null) {
+          this.initial_status = this.get_state()
+        }
+        if (this.validate_selection()) {
+          if (this.selected.length > 0) {
+            this.moves.push(this.selected)
+          }
+          // REMOVE!!!!
           this.props.parent.send_score({
             initial_state: this.initial_status,
             moves: this.moves,
             seed: this.seed,
           })
-          this.boxes.filter(e => e != null).forEach(e => e.init_value())
-          this.props.parent.score.reset()
-          this.seed = Date.now()
+          this.update_boxes(sum, this.selected).then(() => {
+            if (this.check_game_over()) {
+              this.props.parent.send_score({
+                initial_state: this.initial_status,
+                moves: this.moves,
+                seed: this.seed,
+              })
+              this.boxes.filter(e => e != null).forEach(e => e.init_value())
+              this.props.parent.score.reset()
+              this.seed = Date.now()
+            }
+          })
         }
+        this.selected = []
       })
-      if (
-        this.boxes.filter(e => e != null).filter(e => e.state.hovered).length >
-        1
-      ) {
-        this.props.parent.increase_score(sum)
-      }
     } else {
       this.clear_selection()
+      this.selected = []
     }
-
-    this.selected = []
 
     this.setState({ selection_on: false }, () => {
       if (clear_last) {

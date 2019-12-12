@@ -128,7 +128,7 @@ class Box extends React.Component {
   update_value(sum, ids, vals) {
     if (this.state.hovered) {
       const ind = ids
-        .map(e => e[0] == this.props.i && e[1] == this.props.j)
+        .map(e => e[0] === this.props.i && e[1] === this.props.j)
         .indexOf(true)
       const val = vals[ind]
 

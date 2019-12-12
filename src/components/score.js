@@ -5,8 +5,10 @@ class Score extends React.Component {
     super(props)
     this.state = { value: 0 }
   }
-  add_score(score) {
-    this.setState({ value: this.state.value + Number(score) })
+  add_score(x) {
+    return new Promise(resolve => {
+      this.setState({ value: this.state.value + x }, resolve)
+    })
   }
   reset() {
     this.setState({ value: 0 })

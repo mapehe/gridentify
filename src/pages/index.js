@@ -30,6 +30,8 @@ class IndexPage extends React.Component {
         moves: input.moves,
         seed: input.seed,
       }
+      // REMOVE
+      console.log(data)
       this.receive_score(data)
       socket.emit("score", data)
     }
@@ -42,8 +44,9 @@ class IndexPage extends React.Component {
   }
   increase_score(score) {
     if (this.score == null) {
+      return Promise(1)
     } else {
-      this.score.add_score(score)
+      return this.score.add_score(score)
     }
   }
   render() {
