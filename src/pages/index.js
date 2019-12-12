@@ -34,7 +34,6 @@ class IndexPage extends React.Component {
         moves: input.moves,
         seed: input.seed,
       }
-      this.receive_score(data)
       socket.emit("score", data)
     }
     socket.on("score", data => {
