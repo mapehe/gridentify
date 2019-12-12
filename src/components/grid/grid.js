@@ -98,12 +98,6 @@ class Grid extends React.Component {
           if (this.selected.length > 0) {
             this.moves.push(this.selected)
           }
-
-          this.props.parent.send_score({
-            initial_state: this.initial_status,
-            moves: this.moves,
-            seed: this.initial_seed,
-          })
           this.update_boxes(sum, this.selected).then(() => {
             if (this.check_game_over()) {
               this.props.parent.send_score({
@@ -115,6 +109,8 @@ class Grid extends React.Component {
               this.props.parent.score.reset()
               this.seed = Date.now()
               this.initial_seed = this.seed
+              this.moves = []
+              this.initial_status = null
             }
           })
 
