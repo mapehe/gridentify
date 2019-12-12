@@ -6,6 +6,7 @@ class Grid extends React.Component {
     super(props)
     this.state = { selection_on: false }
     this.seed = Date.now()
+    this.initial_seed = this.seed
     this.touchDown = this.touchDown.bind(this)
     this.touchUp = this.touchUp.bind(this)
     this.clear_selection = this.clear_selection.bind(this)
@@ -17,6 +18,7 @@ class Grid extends React.Component {
   moves = []
   initial_status = null
   seed = null
+  initial_seed = null
   check_leave() {
     if (
       !this.boxes
@@ -100,18 +102,19 @@ class Grid extends React.Component {
           this.props.parent.send_score({
             initial_state: this.initial_status,
             moves: this.moves,
-            seed: this.seed,
+            seed: this.initial_seed,
           })
           this.update_boxes(sum, this.selected).then(() => {
             if (this.check_game_over()) {
               this.props.parent.send_score({
                 initial_state: this.initial_status,
                 moves: this.moves,
-                seed: this.seed,
+                seed: this.initial_seed,
               })
               this.boxes.filter(e => e != null).forEach(e => e.init_value())
               this.props.parent.score.reset()
               this.seed = Date.now()
+              this.initial_seed = this.seed
             }
           })
 
