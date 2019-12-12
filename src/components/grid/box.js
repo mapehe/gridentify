@@ -131,30 +131,16 @@ class Box extends React.Component {
         .map(e => e[0] === this.props.i && e[1] === this.props.j)
         .indexOf(true)
       const val = vals[ind]
-
-      if (this.state.last) {
-        return new Promise(resolve => {
-          this.setState(
-            {
-              hovered: false,
-              last: this.state.last,
-              value: sum,
-            },
-            resolve
-          )
-        })
-      } else {
-        return new Promise(resolve => {
-          this.setState(
-            {
-              hovered: false,
-              last: this.state.last,
-              value: val,
-            },
-            resolve
-          )
-        })
-      }
+      return new Promise(resolve => {
+        this.setState(
+          {
+            hovered: false,
+            last: this.state.last,
+            value: val,
+          },
+          resolve
+        )
+      })
     }
   }
   get_value() {

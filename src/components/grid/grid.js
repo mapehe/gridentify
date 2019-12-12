@@ -42,7 +42,7 @@ class Grid extends React.Component {
   }
   next_pseudorandom() {
     const out = (this.seed = (this.seed * 16807) % 2147483647)
-    if (this._seed <= 0) this._seed += 2147483646
+    if (this.seed <= 0) this.seed += 2147483646
     return (out % 3) + 1
   }
   random_array(n) {
@@ -53,7 +53,7 @@ class Grid extends React.Component {
     return out
   }
   update_boxes(sum, ids) {
-    const vals = this.random_array(ids.length - 1)
+    const vals = this.random_array(ids.length - 1).concat(sum)
     return Promise.all(
       this.boxes
         .map(e =>
@@ -88,11 +88,11 @@ class Grid extends React.Component {
       const sum = this.boxes
         .map(e => (e != null ? e.get_value() : 0))
         .reduce((a, b) => a + b, 0)
-      this.props.parent.increase_score(sum).then(() => {
-        if (this.initial_status === null) {
-          this.initial_status = this.get_state()
-        }
-        if (this.validate_selection()) {
+      if (this.initial_status === null) {
+        this.initial_status = this.get_state()
+      }
+      if (this.validate_selection()) {
+        this.props.parent.increase_score(sum).then(() => {
           if (this.selected.length > 0) {
             this.moves.push(this.selected)
           }
@@ -114,9 +114,14 @@ class Grid extends React.Component {
               this.seed = Date.now()
             }
           })
-        }
+
+          this.clear_selection()
+          this.selected = []
+        })
+      } else {
+        this.clear_selection()
         this.selected = []
-      })
+      }
     } else {
       this.clear_selection()
       this.selected = []
