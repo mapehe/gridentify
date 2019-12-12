@@ -6,6 +6,10 @@ import Grid from "../components/grid/grid"
 import Score from "../components/score"
 import ScoreFeed from "../components/score_feed"
 import socketIOClient from "socket.io-client"
+import Container from "react-bootstrap/Container"
+import Col from "react-bootstrap/Col"
+import Row from "react-bootstrap/Row"
+import { isMobile } from "react-device-detect"
 
 const GRID_SIZE = 5
 
@@ -48,23 +52,51 @@ class IndexPage extends React.Component {
     }
   }
   render() {
-    return (
-      <Layout>
-        <Score
-          ref={b => {
-            this.score = b
-          }}
-        />
-        <div className="grid">
-          <Grid grid_size={GRID_SIZE} parent={this} />
-        </div>
-        <ScoreFeed
-          ref={b => {
-            this.score_feed = b
-          }}
-        />
-      </Layout>
-    )
+    if (!isMobile) {
+      return (
+        <Layout>
+          <Container style={{ paddingTop: "50px" }}>
+            <Row>
+              <Col style={{ textAlign: "center" }}>
+                <div className="grid">
+                  <Grid grid_size={GRID_SIZE} parent={this} />
+                </div>
+                <Score
+                  ref={b => {
+                    this.score = b
+                  }}
+                />
+              </Col>
+              <Col>
+                <ScoreFeed
+                  ref={b => {
+                    this.score_feed = b
+                  }}
+                />
+              </Col>
+            </Row>
+          </Container>
+        </Layout>
+      )
+    } else {
+      return (
+        <Layout>
+          <Score
+            ref={b => {
+              this.score = b
+            }}
+          />
+          <div className="grid">
+            <Grid grid_size={GRID_SIZE} parent={this} />
+          </div>
+          <ScoreFeed
+            ref={b => {
+              this.score_feed = b
+            }}
+          />
+        </Layout>
+      )
+    }
   }
 }
 

@@ -1,0 +1,8 @@
+.realTimeScoreFeed {
+  height: 60vh;
+  overflow: scroll;
+}
+
+.scoreFeed {
+  padding-top: 20px;
+}

@@ -1,14 +1,21 @@
+@import url("https://fonts.googleapis.com/css?family=Lilita+One&display=swap");
+
 .grid {
   margin: 0 auto;
   width: 80vw;
   max-width: 60vh;
   height: 80vw;
   max-height: 60vh;
-  font-size: 1rem;
+  font: 150%/1.45em georgia, serif;
 }
 @media only screen and (max-width: 600px) {
   .grid {
     display: inline;
+  }
+}
+@media only screen and (min-width: 600px) {
+  .grid {
+    margin-bottom: 5vh;
   }
 }
 
@@ -44,4 +51,24 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  font-family: "Lilita One", cursive;
+  font-size: 1.7em;
+}
+
+@media only screen and (max-width: 600px) {
+  .box .inner {
+    font-size: 1em;
+  }
+}
+
+#score_value {
+  font-family: "Lilita One", cursive;
+  font-size: 1.7em;
+}
+
+.scoreContainer {
+  margin-top: 2.5vh;
+}
+
+.scoreFeedTitle {
 }
