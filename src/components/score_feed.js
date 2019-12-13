@@ -6,6 +6,9 @@ import Card from "react-bootstrap/Card"
 import ListGroup from "react-bootstrap/ListGroup"
 import "./score_feed.css"
 import { isMobile } from "react-device-detect"
+import Noty from "noty"
+import "noty/lib/noty.css"
+import "noty/lib/themes/mint.css"
 
 class RealTimeScoreElement extends React.Component {
   render() {
@@ -96,11 +99,11 @@ class ScoreFeed extends React.Component {
     }
   }
   new_score(data) {
-    this.setState({
-      scores: this.state.scores.concat([data]),
-      daily_top: this.state.daily_top,
-      all_top: this.state.all_top,
-    })
+    new Noty({
+      text: data.username + ": " + data.score.toString(),
+      timeout: 5000,
+      killer: isMobile,
+    }).show()
   }
   feeds() {
     return (
@@ -109,19 +112,6 @@ class ScoreFeed extends React.Component {
         style={isMobile ? { padding: "0" } : {}}
       >
         <Row>
-          <Col style={{ padding: "0" }} xs={12} sm={6}>
-            <RealTimeScoreFeed>
-              {this.state.scores
-                .map((score, index) => (
-                  <RealTimeScoreElement
-                    username={score.username}
-                    score={score.score}
-                    key={"realtime-" + index.toString()}
-                  />
-                ))
-                .reverse()}
-            </RealTimeScoreFeed>
-          </Col>
           <Col style={{ padding: "0" }}>
             <TopScoreFeed title="Daily High">
               {this.state.daily_top.slice(0, 5).map((score, index) => (
@@ -133,6 +123,8 @@ class ScoreFeed extends React.Component {
                 />
               ))}
             </TopScoreFeed>
+          </Col>
+          <Col style={{ padding: "0" }}>
             <TopScoreFeed title="All Time High">
               {this.state.all_top.slice(0, 5).map((score, index) => (
                 <TopScoreElement
