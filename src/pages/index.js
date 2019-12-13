@@ -51,59 +51,31 @@ class IndexPage extends React.Component {
     }
   }
   render() {
-    if (!isMobile) {
-      return (
-        <Layout>
-          <Container style={{ paddingTop: "50px" }}>
-            <Row>
-              <Col style={{ textAlign: "center" }}>
-                <div className="grid">
-                  <Grid grid_size={GRID_SIZE} parent={this} />
-                </div>
-                <Score
-                  ref={b => {
-                    this.score = b
-                  }}
-                />
-              </Col>
-              <Col>
-                <ScoreFeed
-                  ref={b => {
-                    this.score_feed = b
-                  }}
-                />
-              </Col>
-            </Row>
-          </Container>
-        </Layout>
-      )
-    } else {
-      return (
-        <Layout>
-          <Container style={{ paddingTop: "25px" }}>
-            <Row>
-              <Col style={{ textAlign: "center" }}>
-                <div className="grid">
-                  <Grid grid_size={GRID_SIZE} parent={this} />
-                </div>
-                <Score
-                  ref={b => {
-                    this.score = b
-                  }}
-                />
-              </Col>
-            </Row>
-            <Row>
-              <ScoreFeed
+    return (
+      <Layout>
+        <Container className="pt-5" style={{ maxWidth: "70vh" }}>
+          <Row>
+            <Col style={{ textAlign: "center" }}>
+              <div className="grid">
+                <Grid grid_size={GRID_SIZE} parent={this} />
+              </div>
+              <Score
                 ref={b => {
-                  this.score_feed = b
+                  this.score = b
                 }}
               />
-            </Row>
-          </Container>
-        </Layout>
-      )
-    }
+            </Col>
+          </Row>
+          <Row>
+            <ScoreFeed
+              ref={b => {
+                this.score_feed = b
+              }}
+            />
+          </Row>
+        </Container>
+      </Layout>
+    )
   }
 }
 

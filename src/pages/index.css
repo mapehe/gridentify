@@ -2,11 +2,9 @@
 
 .grid {
   margin: 0 auto;
-  width: 80vw;
-  max-width: 60vh;
-  height: 80vw;
-  max-height: 60vh;
   font: 150%/1.45em georgia, serif;
+  max-width: 60vh;
+  max-height: 60vh;
 }
 @media only screen and (max-width: 600px) {
   .grid {
@@ -53,12 +51,6 @@
   justify-content: center;
   font-family: "Lilita One", cursive;
   font-size: 1.7em;
-}
-
-@media only screen and (max-width: 600px) {
-  .box .inner {
-    font-size: 1em;
-  }
 }
 
 #score_value {

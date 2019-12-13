@@ -105,7 +105,10 @@ class ScoreFeed extends React.Component {
   feeds() {
     if (!isMobile) {
       return (
-        <Container style={isMobile ? { padding: "0" } : {}}>
+        <Container
+          id="scoreFeedsContainer"
+          style={isMobile ? { padding: "0" } : {}}
+        >
           <Row>
             <Col
               style={

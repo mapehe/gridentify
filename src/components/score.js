@@ -15,7 +15,7 @@ class Score extends React.Component {
   }
   render() {
     return (
-      <p id="score_value" className="mt-4">
+      <p id="score_value" className="m-4">
         {this.state.value}
       </p>
     )
