@@ -6,6 +6,20 @@ const box_class = (hovered, last) => {
 }
 
 class Box extends React.Component {
+  ref = null
+  componentDidMount() {
+    this.set_color(this.ref)
+  }
+  set_color(ref) {
+    ref.style.backgroundColor =
+      "rgb(" +
+      (255 - Math.min(this.state.value * 80, 50)) +
+      "," +
+      (255 - Math.min(this.state.value * 20, 100)) +
+      "," +
+      255 +
+      ")"
+  }
   constructor(props) {
     super(props)
     this.state = { hovered: false, last: false, value: this.random_value() }
@@ -140,7 +154,7 @@ class Box extends React.Component {
           },
           resolve
         )
-      })
+      }).then(this.set_color(this.ref))
     }
   }
   get_value() {
@@ -156,6 +170,9 @@ class Box extends React.Component {
       <>
         <div
           id={`ge-${this.props.i}-${this.props.j}`}
+          ref={b => {
+            this.ref = b
+          }}
           onMouseEnter={() => {
             if (!isMobile) {
               this.enter()

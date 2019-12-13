@@ -52,6 +52,7 @@ class ScoreFeed extends React.Component {
   new_score(data) {
     const n = new Noty({
       text: data.username + ": " + data.score.toString(),
+      closeWith: [],
     })
     this.notys.push(n)
     n.show()

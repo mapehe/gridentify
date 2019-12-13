@@ -41,7 +41,7 @@
 .last {
 }
 .selected {
-  background-color: red;
+  background-color: red !important;
 }
 .box:after {
   content: "";
