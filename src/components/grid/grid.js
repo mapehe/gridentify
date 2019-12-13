@@ -19,6 +19,21 @@ class Grid extends React.Component {
   initial_status = null
   seed = null
   initial_seed = null
+  grid = null
+  componentDidMount() {
+    try {
+      this.grid.addEventListener(
+        "touchmove",
+        e => {
+          e.preventDefault()
+          this.touchMove(e)
+        },
+        { passive: false }
+      )
+    } catch (e) {
+      console.log(e)
+    }
+  }
   check_leave() {
     if (
       !this.boxes
@@ -224,12 +239,11 @@ class Grid extends React.Component {
         onMouseUp={() => {
           this.touchUp(false)
         }}
-        onTouchMove={e => this.touchMove(e)}
+        ref={b => {
+          this.grid = b
+        }}
         onTouchStart={this.touchStart}
         onTouchEnd={this.touchEnd}
-        style={{
-          touchAction: "none",
-        }}
       >
         {Array.from(Array(this.props.grid_size)).map((_, i) => (
           <div className="row" key={"a" + i.toString()}>
