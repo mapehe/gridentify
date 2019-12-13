@@ -69,7 +69,13 @@ class IndexPage extends React.Component {
     })
   }
   receive_score(data) {
-    this.score_feed.new_score(data)
+    this.score_feed.new_score(this.sanitize_score(data))
+  }
+  sanitize_score(data) {
+    return {
+      username: data.username.replace(/[^0-9a-z _\-]/gi, ""),
+      score: Number(data.score),
+    }
   }
   increase_score(score) {
     if (this.score == null) {

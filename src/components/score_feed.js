@@ -8,7 +8,7 @@ import "./score_feed.css"
 import { isMobile } from "react-device-detect"
 import Noty from "noty"
 import "noty/lib/noty.css"
-import "noty/lib/themes/mint.css"
+import "noty/lib/themes/semanticui.css"
 
 const noty_count = !isMobile ? 10 : 3
 Noty.setMaxVisible(noty_count)
@@ -51,8 +51,10 @@ class ScoreFeed extends React.Component {
   }
   new_score(data) {
     const n = new Noty({
-      text: data.username + ": " + data.score.toString(),
-      closeWith: [],
+      text: "<b>" + data.username + "</b> " + Number(data.score.toString()),
+      closeWith: ["click"],
+      type: "info",
+      theme: "semanticui",
     })
     this.notys.push(n)
     n.show()
