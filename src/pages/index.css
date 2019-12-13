@@ -17,6 +17,16 @@
   }
 }
 
+#main_container {
+  max-width: 70vh;
+}
+
+@media only screen and (max-width: 600px) {
+  #main_container {
+    margin-top: 25vh;
+  }
+}
+
 .box {
   flex: 1 0 auto;
   position: relative;

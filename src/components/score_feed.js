@@ -10,7 +10,7 @@ import Noty from "noty"
 import "noty/lib/noty.css"
 import "noty/lib/themes/mint.css"
 
-const noty_count = !isMobile ? 10 : 4
+const noty_count = !isMobile ? 10 : 3
 Noty.setMaxVisible(noty_count)
 
 class TopScoreElement extends React.Component {
