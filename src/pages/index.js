@@ -4,6 +4,7 @@ import "bootstrap/dist/css/bootstrap.min.css"
 import "./index.css"
 import Grid from "../components/grid/grid"
 import Score from "../components/score"
+import Intro from "../components/intro"
 import ScoreFeed from "../components/score_feed"
 import socketIOClient from "socket.io-client"
 import Container from "react-bootstrap/Container"
@@ -81,6 +82,7 @@ class IndexPage extends React.Component {
     return (
       <Layout>
         <Container id="main_container" className="pt-5">
+          <Intro />
           <Row>
             <Col style={{ textAlign: "center" }}>
               <div className="grid">
