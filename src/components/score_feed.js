@@ -10,6 +10,9 @@ import Noty from "noty"
 import "noty/lib/noty.css"
 import "noty/lib/themes/mint.css"
 
+const noty_count = !isMobile ? 10 : 4
+Noty.setMaxVisible(noty_count)
+
 class TopScoreElement extends React.Component {
   render() {
     return (
@@ -34,6 +37,7 @@ class TopScoreFeed extends React.Component {
 }
 
 class ScoreFeed extends React.Component {
+  notys = []
   constructor(props) {
     super(props)
     this.state = {
@@ -46,11 +50,20 @@ class ScoreFeed extends React.Component {
     }
   }
   new_score(data) {
-    new Noty({
+    const n = new Noty({
       text: data.username + ": " + data.score.toString(),
-      timeout: 5000,
-      killer: isMobile,
-    }).show()
+    })
+    this.notys.push(n)
+    n.show()
+    if (this.notys.length > noty_count) {
+      this.notys
+        .slice(0, Math.max(this.notys.length - noty_count, 0))
+        .map(n => {
+          n.close()
+          return 0
+        })
+    }
+    this.notys = this.notys.slice(Math.max(this.notys.length - noty_count, 0))
   }
   feeds() {
     return (

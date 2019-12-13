@@ -53,7 +53,10 @@ class IndexPage extends React.Component {
   render() {
     return (
       <Layout>
-        <Container className="pt-5" style={{ maxWidth: "70vh" }}>
+        <Container
+          className="pt-5"
+          style={{ maxWidth: "70vh", marginTop: "200px" }}
+        >
           <Row>
             <Col style={{ textAlign: "center" }}>
               <div className="grid">
