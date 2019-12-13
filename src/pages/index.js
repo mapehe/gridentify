@@ -10,12 +10,14 @@ import Container from "react-bootstrap/Container"
 import Col from "react-bootstrap/Col"
 import Row from "react-bootstrap/Row"
 import { isMobile } from "react-device-detect"
+import Swal from "sweetalert2"
 
 const GRID_SIZE = 5
 
 class IndexPage extends React.Component {
   score = null
   score_feed = null
+  alert_username = true
   constructor(props) {
     super(props)
     this.state = {
@@ -25,6 +27,31 @@ class IndexPage extends React.Component {
     this.send_score = () => {}
   }
   componentDidMount = () => {
+    Swal.fire({
+      title: "Choose a nick",
+      input: "text",
+
+      inputAttributes: {
+        maxlength: 15,
+      },
+      inputValidator: value => {
+        return new Promise(resolve => {
+          if (/^[a-zA-Z0-9 \-_]/.test(value)) {
+            resolve()
+          } else {
+            resolve(
+              "Your nick can only contain alphanumeric characters, spaces, dashes and underscores."
+            )
+          }
+        })
+      },
+    }).then(nick => {
+      this.setState({
+        endpoint: this.state.endpoint,
+        username: nick.value,
+      })
+    })
+
     const socket = socketIOClient(this.state.endpoint)
     this.send_score = input => {
       const data = {
