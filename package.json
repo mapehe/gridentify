@@ -6,7 +6,7 @@
   "author": "Kyle Mathews <mathews.kyle@gmail.com>",
   "dependencies": {
     "bootstrap": "^4.4.1",
-    "gatsby": "^2.18.4",
+    "gatsby": "^2.18.11",
     "gatsby-image": "^2.2.34",
     "gatsby-plugin-manifest": "^2.2.30",
     "gatsby-plugin-offline": "^3.0.24",
@@ -23,6 +23,7 @@
     "socket.io-client": "^2.3.0"
   },
   "devDependencies": {
+    "gh-pages": "^2.1.1",
     "husky": "^3.1.0",
     "lint-staged": "^9.5.0",
     "prettier": "^1.19.1"
@@ -39,7 +40,8 @@
     "serve": "gatsby serve",
     "clean": "gatsby clean",
     "test": "echo \"Write tests! -> https://gatsby.dev/unit-testing\" && exit 1",
-    "prettier": "prettier --write src/**/*.{js,css} && prettier --write src/**/**/*.{js,css}"
+    "prettier": "prettier --write src/**/*.{js,css} && prettier --write src/**/**/*.{js,css}",
+    "deploy": "gatsby build && gh-pages -d public -b gh-pages"
   },
   "repository": {
     "type": "git",

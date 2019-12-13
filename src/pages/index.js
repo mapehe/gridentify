@@ -19,7 +19,7 @@ class IndexPage extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      endpoint: "localhost:3000",
+      endpoint: process.env.BACKEND_ENDPOINT,
       username: "username",
     }
     this.send_score = () => {}
