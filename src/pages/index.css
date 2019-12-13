@@ -53,6 +53,11 @@
   font-size: 1.7em;
 }
 
+@media only screen and (max-width: 600px) {
+  .box .inner {
+    font-size: 1.2em;
+  }
+}
 #score_value {
   font-family: "Lilita One", cursive;
   font-size: 1.7em;
