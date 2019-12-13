@@ -218,7 +218,7 @@ class Grid extends React.Component {
 
   render() {
     this.boxes = []
-    return Array.from(Array(this.props.grid_size)).map((_, i) => (
+    return (
       <div
         onMouseDown={this.touchDown}
         onMouseUp={() => {
@@ -227,26 +227,27 @@ class Grid extends React.Component {
         onTouchMove={e => this.touchMove(e)}
         onTouchStart={this.touchStart}
         onTouchEnd={this.touchEnd}
-        key={"a" + i.toString()}
         style={{
           touchAction: "none",
         }}
       >
-        <div className="row">
-          {Array.from(Array(this.props.grid_size)).map((_, j) => (
-            <Box
-              i={i}
-              j={j}
-              parent={this}
-              ref={b => {
-                this.boxes.push(b)
-              }}
-              key={i.toString() + "-" + j.toString()}
-            />
-          ))}
-        </div>
+        {Array.from(Array(this.props.grid_size)).map((_, i) => (
+          <div className="row" key={"a" + i.toString()}>
+            {Array.from(Array(this.props.grid_size)).map((_, j) => (
+              <Box
+                i={i}
+                j={j}
+                parent={this}
+                ref={b => {
+                  this.boxes.push(b)
+                }}
+                key={"box-" + i.toString() + "-" + j.toString()}
+              />
+            ))}
+          </div>
+        ))}
       </div>
-    ))
+    )
   }
 }
 

@@ -80,19 +80,27 @@ class IndexPage extends React.Component {
     } else {
       return (
         <Layout>
-          <Score
-            ref={b => {
-              this.score = b
-            }}
-          />
-          <div className="grid">
-            <Grid grid_size={GRID_SIZE} parent={this} />
-          </div>
-          <ScoreFeed
-            ref={b => {
-              this.score_feed = b
-            }}
-          />
+          <Container style={{ paddingTop: "25px" }}>
+            <Row>
+              <Col style={{ textAlign: "center" }}>
+                <div className="grid">
+                  <Grid grid_size={GRID_SIZE} parent={this} />
+                </div>
+                <Score
+                  ref={b => {
+                    this.score = b
+                  }}
+                />
+              </Col>
+            </Row>
+            <Row>
+              <ScoreFeed
+                ref={b => {
+                  this.score_feed = b
+                }}
+              />
+            </Row>
+          </Container>
         </Layout>
       )
     }
