@@ -62,6 +62,7 @@ class ScoreFeed extends React.Component {
       closeWith: ["click"],
       type: "info",
       theme: "semanticui",
+      timeout: isMobile ? 2000 : false,
     }).on("afterShow", () => {
       try {
         $(`#${div_id}`).toggle()
