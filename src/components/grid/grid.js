@@ -16,9 +16,9 @@ class Grid extends React.Component {
   boxes = []
   selected = []
   moves = []
-  initial_status = null
   seed = null
   initial_seed = null
+  initial_status = null
   grid = null
   componentDidMount() {
     try {
@@ -33,6 +33,7 @@ class Grid extends React.Component {
     } catch (e) {
       console.log(e)
     }
+    this.initial_status = this.get_state()
   }
   check_leave() {
     if (
