@@ -33,11 +33,11 @@ class IndexPage extends React.Component {
       input: "text",
 
       inputAttributes: {
-        maxlength: 15,
+        maxlength: 20,
       },
       inputValidator: value => {
         return new Promise(resolve => {
-          if (/^[a-zA-Z0-9 ]/.test(value)) {
+          if (true) {
             resolve()
           } else {
             resolve(
@@ -62,6 +62,7 @@ class IndexPage extends React.Component {
         moves: input.moves,
         seed: input.seed,
       }
+      console.log(data)
       socket.emit("score", data)
     }
     socket.on("score", data => {
@@ -72,16 +73,11 @@ class IndexPage extends React.Component {
     })
   }
   receive_score(data) {
-    this.score_feed.new_score(this.sanitize_score(data))
+    console.log(data)
+    this.score_feed.new_score(data)
   }
   receive_record(data) {
     this.score_feed.update_records(data)
-  }
-  sanitize_score(data) {
-    return {
-      username: data.username.replace(/[^0-9a-z ]/gi, ""),
-      score: Number(data.score),
-    }
   }
   increase_score(score) {
     if (this.score == null) {
