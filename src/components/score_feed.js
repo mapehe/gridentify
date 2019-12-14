@@ -93,47 +93,48 @@ class ScoreFeed extends React.Component {
     })
   }
 
-  feeds() {
-    return (
-      <Container
-        id="scoreFeedsContainer"
-        style={isMobile ? { padding: "0" } : {}}
-      >
-        <Row>
-          <Col style={{ padding: "0" }}>
-            <TopScoreFeed title="Daily High">
-              {this.state.daily_top.slice(0, 5).map((score, index) => (
-                <TopScoreElement
-                  username={score.username}
-                  score={score.score}
-                  index={index}
-                  key={"daily-" + index.toString()}
-                />
-              ))}
-            </TopScoreFeed>
-          </Col>
-          <Col style={{ padding: "0" }}>
-            <TopScoreFeed title="All Time High">
-              {this.state.all_top.slice(0, 5).map((score, index) => (
-                <TopScoreElement
-                  username={score.username}
-                  score={score.score}
-                  index={index}
-                  key={"alltime-" + index.toString()}
-                />
-              ))}
-            </TopScoreFeed>
-          </Col>
-        </Row>
-      </Container>
-    )
-  }
-
   render() {
-    return (
+    return this.props.connected ? (
       <>
-        <Container className="scoreContainer">{this.feeds()}</Container>
+        <Container className="scoreContainer">
+          <Container
+            id="scoreFeedsContainer"
+            style={isMobile ? { padding: "0" } : {}}
+          >
+            <Row>
+              <Col style={{ padding: "0" }}>
+                <TopScoreFeed title="Daily High">
+                  {this.state.daily_top.slice(0, 5).map((score, index) => (
+                    <TopScoreElement
+                      username={score.username}
+                      score={score.score}
+                      index={index}
+                      key={"daily-" + index.toString()}
+                    />
+                  ))}
+                </TopScoreFeed>
+              </Col>
+              <Col style={{ padding: "0" }}>
+                <TopScoreFeed title="All Time High">
+                  {this.state.all_top.slice(0, 5).map((score, index) => (
+                    <TopScoreElement
+                      username={score.username}
+                      score={score.score}
+                      index={index}
+                      key={"alltime-" + index.toString()}
+                    />
+                  ))}
+                </TopScoreFeed>
+              </Col>
+            </Row>
+          </Container>
+        </Container>
       </>
+    ) : (
+      <div class="text-center" style={{ width: "100%" }}>
+        <p>Couldn't get the scores right now.</p>
+        <p>Sorry :(</p>
+      </div>
     )
   }
 }

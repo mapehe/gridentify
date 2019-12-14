@@ -24,6 +24,7 @@ class IndexPage extends React.Component {
     this.state = {
       endpoint: process.env.BACKEND_ENDPOINT,
       username: "username",
+      connected: false,
     }
     this.send_score = () => {}
   }
@@ -48,10 +49,41 @@ class IndexPage extends React.Component {
       this.setState({
         endpoint: this.state.endpoint,
         username: nick.value,
+        connected: this.state.connected,
       })
     })
 
     const socket = socketIOClient(this.state.endpoint)
+    socket.on("connect", () => {
+      this.setState({
+        endpoint: this.state.endpoint,
+        username: this.state.username,
+        connected: true,
+      })
+    })
+    socket.on("disconnect", () => {
+      this.setState({
+        endpoint: this.state.endpoint,
+        username: this.state.username,
+        connected: false,
+      })
+    })
+    socket.on("score", data => {
+      this.setState({
+        endpoint: this.state.endpoint,
+        username: this.state.username,
+        connected: true,
+      })
+      this.receive_score(data)
+    })
+    socket.on("record", data => {
+      this.setState({
+        endpoint: this.state.endpoint,
+        username: this.state.username,
+        connected: true,
+      })
+      this.receive_record(data)
+    })
     this.send_score = input => {
       const data = {
         score: this.score.state.value,
@@ -60,15 +92,8 @@ class IndexPage extends React.Component {
         moves: input.moves,
         seed: input.seed,
       }
-      console.log(data)
       socket.emit("score", data)
     }
-    socket.on("score", data => {
-      this.receive_score(data)
-    })
-    socket.on("record", data => {
-      this.receive_record(data)
-    })
   }
   receive_score(data) {
     this.score_feed.new_score(data)
@@ -105,6 +130,7 @@ class IndexPage extends React.Component {
               ref={b => {
                 this.score_feed = b
               }}
+              connected={this.state.connected}
             />
           </Row>
         </Container>
