@@ -37,11 +37,11 @@ class IndexPage extends React.Component {
       },
       inputValidator: value => {
         return new Promise(resolve => {
-          if (/^[a-zA-Z0-9 \-_]/.test(value)) {
+          if (/^[a-zA-Z0-9 ]/.test(value)) {
             resolve()
           } else {
             resolve(
-              "Your nick can only contain alphanumeric characters, spaces, dashes and underscores."
+              "Your nick can only contain alphanumeric characters and spaces."
             )
           }
         })
@@ -73,7 +73,7 @@ class IndexPage extends React.Component {
   }
   sanitize_score(data) {
     return {
-      username: data.username.replace(/[^0-9a-z _\-]/gi, ""),
+      username: data.username.replace(/[^0-9a-z ]/gi, ""),
       score: Number(data.score),
     }
   }

@@ -37,6 +37,7 @@ class TopScoreFeed extends React.Component {
 }
 
 class ScoreFeed extends React.Component {
+  id_counter = 0
   notys = []
   constructor(props) {
     super(props)
@@ -50,11 +51,21 @@ class ScoreFeed extends React.Component {
     }
   }
   new_score(data) {
+    const id1 = `noty-${this.id_counter}-username`
+    const id2 = `noty-${this.id_counter}-score`
     const n = new Noty({
-      text: "<b>" + data.username + "</b> " + Number(data.score.toString()),
+      text: `<b id="${id1}"></b> <span id="${id2}"></span>`,
       closeWith: ["click"],
       type: "info",
       theme: "semanticui",
+    }).on("afterShow", () => {
+      console.log(id1)
+      try {
+        document.getElementById(id1).innerText = data.username
+        document.getElementById(id2).innerText = data.score
+      } catch (e) {
+        console.log(e)
+      }
     })
     this.notys.push(n)
     n.show()
@@ -67,6 +78,7 @@ class ScoreFeed extends React.Component {
         })
     }
     this.notys = this.notys.slice(Math.max(this.notys.length - noty_count, 0))
+    this.id_counter += 1
   }
   feeds() {
     return (
