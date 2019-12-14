@@ -73,7 +73,6 @@ class IndexPage extends React.Component {
     })
   }
   receive_score(data) {
-    console.log(data)
     this.score_feed.new_score(data)
   }
   receive_record(data) {
