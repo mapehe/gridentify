@@ -52,36 +52,19 @@ class IndexPage extends React.Component {
         connected: this.state.connected,
       })
     })
-
     const socket = socketIOClient(this.state.endpoint)
     socket.on("connect", () => {
-      this.setState({
-        endpoint: this.state.endpoint,
-        username: this.state.username,
-        connected: true,
-      })
+      this.setConnected(true)
     })
     socket.on("disconnect", () => {
-      this.setState({
-        endpoint: this.state.endpoint,
-        username: this.state.username,
-        connected: false,
-      })
+      this.setConnected(false)
     })
     socket.on("score", data => {
-      this.setState({
-        endpoint: this.state.endpoint,
-        username: this.state.username,
-        connected: true,
-      })
+      this.setConnected(true)
       this.receive_score(data)
     })
     socket.on("record", data => {
-      this.setState({
-        endpoint: this.state.endpoint,
-        username: this.state.username,
-        connected: true,
-      })
+      this.setConnected(true)
       this.receive_record(data)
     })
     this.send_score = input => {
@@ -94,6 +77,13 @@ class IndexPage extends React.Component {
       }
       socket.emit("score", data)
     }
+  }
+  setConnected(value) {
+    this.setState({
+      endpoint: this.state.endpoint,
+      username: this.state.username,
+      connected: value,
+    })
   }
   receive_score(data) {
     this.score_feed.new_score(data)
