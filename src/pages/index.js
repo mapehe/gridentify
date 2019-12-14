@@ -67,9 +67,15 @@ class IndexPage extends React.Component {
     socket.on("score", data => {
       this.receive_score(data)
     })
+    socket.on("record", data => {
+      this.receive_record(data)
+    })
   }
   receive_score(data) {
     this.score_feed.new_score(this.sanitize_score(data))
+  }
+  receive_record(data) {
+    this.score_feed.update_records(data)
   }
   sanitize_score(data) {
     return {

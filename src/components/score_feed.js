@@ -83,6 +83,13 @@ class ScoreFeed extends React.Component {
     this.notys = this.notys.slice(Math.max(this.notys.length - noty_count, 0))
     this.id_counter += 1
   }
+  update_records(data) {
+    this.setState({
+      daily_top: data.daily,
+      all_top: data.all_time,
+    })
+  }
+
   feeds() {
     return (
       <Container
