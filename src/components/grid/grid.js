@@ -105,9 +105,6 @@ class Grid extends React.Component {
       const sum = this.boxes
         .map(e => (e != null ? e.get_value() : 0))
         .reduce((a, b) => a + b, 0)
-      if (this.initial_status === null) {
-        this.initial_status = this.get_state()
-      }
       if (this.validate_selection()) {
         this.props.parent.increase_score(sum).then(() => {
           if (this.selected.length > 0) {
@@ -134,10 +131,11 @@ class Grid extends React.Component {
               })
               this.boxes.filter(e => e != null).forEach(e => e.init_value())
               this.props.parent.score.reset()
+
               this.seed = Date.now()
               this.initial_seed = this.seed
               this.moves = []
-              this.initial_status = null
+              this.initial_status = this.get_state()
             }
           })
 
