@@ -37,12 +37,10 @@ class IndexPage extends React.Component {
       },
       inputValidator: value => {
         return new Promise(resolve => {
-          if (true) {
+          if (value.length > 0) {
             resolve()
           } else {
-            resolve(
-              "Your nick can only contain alphanumeric characters and spaces."
-            )
+            resolve("Your nick can't be empty!")
           }
         })
       },
