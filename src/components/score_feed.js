@@ -17,9 +17,9 @@ Noty.setMaxVisible(noty_count)
 class TopScoreElement extends React.Component {
   render() {
     return (
-      <ListGroup.Item>
-        {this.props.username} {this.props.score}
-      </ListGroup.Item>
+      <p>
+        <span>{this.props.username}</span> <span>{this.props.score}</span>
+      </p>
     )
   }
 }
@@ -28,9 +28,11 @@ class TopScoreFeed extends React.Component {
   render() {
     return (
       <>
-        <Card>
-          <Card.Header>{this.props.title}</Card.Header>
-          <ListGroup>{this.props.children}</ListGroup>
+        <Card className="">
+          <Card.Header style={{ backgroundColor: "#f9edff" }}>
+            <b>{this.props.title}</b>
+          </Card.Header>
+          <Card.Body>{this.props.children}</Card.Body>
         </Card>
       </>
     )
@@ -44,10 +46,10 @@ class ScoreFeed extends React.Component {
     super(props)
     this.state = {
       daily_top: [...Array(5).keys()].map(e => {
-        return { username: "", score: "0" }
+        return { username: "anon", score: "0" }
       }),
       all_top: [...Array(5).keys()].map(e => {
-        return { username: "", score: "0" }
+        return { username: "anon", score: "0" }
       }),
     }
   }

@@ -95,7 +95,7 @@ class IndexPage extends React.Component {
       <Layout>
         <Container id="main_container" className="pt-5">
           <Intro />
-          <Row>
+          <Row id="grid_row">
             <Col style={{ textAlign: "center" }}>
               <div className="grid">
                 <Grid grid_size={GRID_SIZE} parent={this} />

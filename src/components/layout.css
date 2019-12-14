@@ -23,6 +23,12 @@ section,
 summary {
   display: block;
 }
+main {
+  color: #1b4461;
+}
+#grid_row {
+  color: black;
+}
 audio,
 canvas,
 progress,
