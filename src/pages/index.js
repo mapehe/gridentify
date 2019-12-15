@@ -123,6 +123,9 @@ class IndexPage extends React.Component {
               connected={this.state.connected}
             />
           </Row>
+          <footer class="mt-5 mb-4 text-center" style={{ width: "100%" }}>
+            This site uses cookies. Learn more.
+          </footer>
         </Container>
       </Layout>
     )
