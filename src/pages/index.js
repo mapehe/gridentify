@@ -12,6 +12,7 @@ import Col from "react-bootstrap/Col"
 import Row from "react-bootstrap/Row"
 import { isMobile } from "react-device-detect"
 import Swal from "sweetalert2"
+import { Link } from "gatsby"
 
 const GRID_SIZE = 5
 
@@ -124,7 +125,7 @@ class IndexPage extends React.Component {
             />
           </Row>
           <footer class="mt-5 mb-4 text-center" style={{ width: "100%" }}>
-            This site uses cookies. Learn more.
+            This site uses cookies. <Link to="/privacy">Learn more.</Link>
           </footer>
         </Container>
       </Layout>
