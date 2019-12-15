@@ -2,61 +2,244 @@ import React from "react"
 import Box from "./box"
 import Swal from "sweetalert2"
 
+const zip = (xs, ys) => xs.map((k, i) => [k, ys[i]])
+
 class Grid extends React.Component {
+  /****************************************************************
+    React stuff 
+  ****************************************************************/
   constructor(props) {
     super(props)
-    this.state = { selection_on: false }
+
+    // Binding methods
+    this.box_from_client_coordinates = this.box_from_client_coordinates.bind(
+      this
+    )
+    this.mouse_move = this.mouse_move.bind(this)
+    this.mouse_up = this.mouse_up.bind(this)
+    this.mouse_down = this.mouse_down.bind(this)
+    this.mouse_leave = this.mouse_leave.bind(this)
+    this.touch_move = this.touch_move.bind(this)
+    this.touch_start = this.touch_start.bind(this)
+    this.touch_end = this.touch_end.bind(this)
+
+    // Class variables
+    this.is_mouse_down = false
     this.seed = Date.now()
     this.initial_seed = this.seed
-    this.touchDown = this.touchDown.bind(this)
-    this.touchUp = this.touchUp.bind(this)
-    this.clear_selection = this.clear_selection.bind(this)
-    this.touchStart = this.touchStart.bind(this)
-    this.touchEnd = this.touchEnd.bind(this)
+    this.state = { selected: [], grid: this.init_grid(this.props.grid_size) }
+    this.moves = []
   }
-  boxes = []
-  selected = []
-  moves = []
-  seed = null
-  initial_seed = null
-  grid = null
   componentDidMount() {
-    try {
-      this.grid.addEventListener(
-        "touchmove",
-        e => {
-          e.preventDefault()
-          this.touchMove(e)
-        },
-        { passive: false }
-      )
-    } catch (e) {
-      console.log(e)
-    }
-    this.init_grid()
+    this.grid.addEventListener(
+      "touchmove",
+      e => {
+        e.preventDefault()
+        this.touch_move(e)
+      },
+      { passive: false }
+    )
   }
-  check_leave() {
-    if (
-      !this.boxes
-        .map(e => (e != null ? e.is_last() : null))
-        .filter(e => !(e == null))
-        .reduce((a, b) => a || b, false)
-    ) {
-      this.clear_selection()
-      this.setState({ selection_on: false })
+  render() {
+    return (
+      <div
+        onMouseDown={this.mouse_down}
+        onTouchStart={this.touch_start}
+        onTouchEnd={this.touch_end}
+        onMouseUp={this.mouse_up}
+        onMouseMove={this.mouse_move}
+        onTouchMove={this.box_from_event}
+        onMouseLeave={this.mouse_leave}
+        ref={g => {
+          this.grid = g
+        }}
+      >
+        {Array.from(Array(this.props.grid_size)).map((_, i) => (
+          <div className="row" key={"row-" + i.toString()}>
+            {Array.from(Array(this.props.grid_size)).map((_, j) => (
+              <Box
+                i={i}
+                j={j}
+                key={"box-" + i.toString() + "-" + j.toString()}
+                selected={this.is_selected(i, j)}
+                grid={this}
+                value={this.state.grid[i][j]}
+              />
+            ))}
+          </div>
+        ))}
+      </div>
+    )
+  }
+
+  /****************************************************************
+    Selection 
+  ****************************************************************/
+  select(i, j, timestamp = new Date()) {
+    const index = this.state.selected
+      .map(x => {
+        return { i: x.i, j: x.j }
+      })
+      .map(JSON.stringify)
+      .indexOf(JSON.stringify({ i: i, j: j }))
+    if (index < 0) {
+      if (this.state.selected.length == 0) {
+        return new Promise(resolve => {
+          this.setState(
+            {
+              selected: this.state.selected
+                .concat({
+                  i: i,
+                  j: j,
+                  timestamp: timestamp,
+                })
+                .sort((a, b) => (a["timestamp"] < b["timestamp"] ? -1 : 1)),
+              grid: this.state.grid,
+            },
+            resolve
+          )
+        })
+      } else {
+        const last = this.state.selected.slice(-1).flatMap(x => [x.i, x.j])
+        if (this.manhattan_distance(last, [i, j]) > 1) {
+          return this.clear_selection()
+        } else {
+          return new Promise(resolve => {
+            this.setState(
+              {
+                selected: this.state.selected
+                  .concat({
+                    i: i,
+                    j: j,
+                    timestamp: timestamp,
+                    grid: this.state.grid,
+                  })
+                  .sort((a, b) => (a["timestamp"] < b["timestamp"] ? -1 : 1)),
+              },
+              resolve
+            )
+          })
+        }
+      }
+    } else if (index == this.state.selected.length - 1) {
+      return Promise.resolve(1)
+    } else {
+      return new Promise(resolve => {
+        this.setState(
+          {
+            selected: this.state.selected.slice(0, index),
+            grid: this.state.grid,
+          },
+          resolve
+        )
+      })
     }
   }
   clear_selection() {
-    this.boxes.forEach(e => (e != null ? e.unselect_box() : {}))
+    return new Promise(resolve => {
+      this.setState(
+        {
+          selected: [],
+          grid: this.state.grid,
+        },
+        resolve
+      )
+    })
   }
-  clear_last() {
-    this.boxes.forEach(e => (e != null ? e.clear_last() : {}))
+  is_selected(i, j) {
+    return (
+      this.state.selected
+        .map(x => {
+          return { i: x.i, j: x.j }
+        })
+        .map(JSON.stringify)
+        .indexOf(JSON.stringify({ i: i, j: j })) >= 0
+    )
   }
-  record_selection(box) {
-    this.selected.push([box.props.i, box.props.j])
+  eval_selection() {
+    if (
+      new Set(this.state.selected.map(p => this.state.grid[p.i][p.j])).size ==
+        1 &&
+      this.state.selected.length > 1
+    ) {
+      var grid = JSON.parse(JSON.stringify(this.state.grid))
+      const sum = this.state.selected
+        .map(p => this.state.grid[p.i][p.j])
+        .reduce((a, b) => a + b, 0)
+      zip(
+        this.state.selected,
+        this.random_array(this.state.selected.length - 1).concat(sum)
+      ).forEach(z => {
+        const ij = z[0]
+        const val = z[1]
+        grid[ij.i][ij.j] = val
+      })
+      this.moves.push(this.state.selected.map(p => [p.i, p.j]))
+      return this.props.parent
+        .increase_score(sum)
+        .then(() => {
+          return this.update_grid(grid)
+        })
+        .then(() => {
+          let activeEnv =
+            process.env.GATSBY_ACTIVE_ENV ||
+            process.env.NODE_ENV ||
+            "development"
+
+          if (activeEnv == "development") {
+            this.props.parent.send_score({
+              moves: this.moves,
+              seed: this.initial_seed,
+              grid_size: this.props.grid_size,
+            })
+          }
+          if (this.is_game_over()) {
+            Swal.fire({
+              title: "Game Over",
+              text: `You scored ${this.props.parent.score.state.value}`,
+              showConfirmButton: false,
+            }).then(() => {
+              this.props.parent.send_score({
+                moves: this.moves,
+                seed: this.initial_seed,
+                grid_size: this.props.grid_size,
+              })
+              this.props.parent.score.reset()
+
+              this.seed = Date.now()
+              this.initial_seed = this.seed
+              this.moves.length = 0
+              this.update_grid(this.init_grid(this.props.grid_size))
+            })
+          }
+        })
+    } else {
+      return Promise.resolve(1)
+    }
   }
-  selection_on() {
-    return this.state.selection_on
+
+  /****************************************************************
+     Grid state
+  ****************************************************************/
+  init_grid(n) {
+    var state = [...Array(n)].map(x => [...Array(n)])
+    for (var i = 0; i < n; i++) {
+      for (var j = 0; j < n; j++) {
+        state[i][j] = this.next_pseudorandom()
+      }
+    }
+    return state
+  }
+  update_grid(grid) {
+    return new Promise(resolve => {
+      this.setState(
+        {
+          selected: this.state.selected,
+          grid: grid,
+        },
+        resolve
+      )
+    })
   }
   next_pseudorandom() {
     const out = (this.seed = (this.seed * 16807) % 2147483647)
@@ -70,221 +253,110 @@ class Grid extends React.Component {
     }
     return out
   }
-  update_boxes(sum, ids) {
-    const vals = this.random_array(ids.length - 1).concat(sum)
-    return Promise.all(
-      this.boxes
-        .map(e =>
-          e !== null ? e.update_value(sum, ids, vals) : Promise.resolve(1)
-        )
-        .filter(e => e !== undefined)
-    )
-  }
-  touchDown(event) {
-    this.boxes.forEach(e => (e != null ? e.select_if_last() : {}))
-    this.setState({ selection_on: true })
-  }
-  validate_selection() {
-    return (
-      new Set(
-        this.boxes
-          .map(e => (e != null ? e.get_value() : null))
-          .filter(e => e != null)
-      ).size === 2
-    )
-  }
-  get_last_coords() {
-    const arr = this.boxes
-      .map(e => (e != null ? e.get_last_coords() : null))
-      .filter(e => e != null)
-    return arr.length > 0 ? arr : null
-  }
-  init_grid() {
+  is_game_over() {
     const n = this.props.grid_size
-    const vals = this.random_array(n ** 2)
-    return Promise.all(
-      this.boxes.filter(e => e != null).map(e => e.init_value(vals, n))
-    )
-  }
-  touchUp(clear_last) {
-    if (
-      this.boxes.filter(e => e != null).filter(e => e.state.hovered).length > 1
-    ) {
-      const sum = this.boxes
-        .map(e => (e != null ? e.get_value() : 0))
-        .reduce((a, b) => a + b, 0)
-      if (this.validate_selection()) {
-        this.props.parent.increase_score(sum).then(() => {
-          if (this.selected.length > 0) {
-            this.moves.push(this.selected)
+    const grid = this.state.grid
+    const range = Array.from(Array(n)).map((_, i) => i)
+    const ds = [
+      [1, 0],
+      [-1, 0],
+      [0, 1],
+      [0, -1],
+    ]
+
+    var test_vector = []
+    for (const i of range) {
+      for (const j of range) {
+        for (const d of ds) {
+          const dx = d[0]
+          const dy = d[1]
+          // If not in grid, don't do anything
+          if (i + dx < 0 || i + dx >= n || j + dy < 0 || j + dy >= n) {
+            continue
+          } else {
+            test_vector.push(grid[i][j] === grid[i + dx][j + dy])
           }
-          let activeEnv =
-            process.env.GATSBY_ACTIVE_ENV ||
-            process.env.NODE_ENV ||
-            "development"
-
-          if (activeEnv == "development") {
-            this.props.parent.send_score({
-              moves: this.moves,
-              seed: this.initial_seed,
-              grid_size: this.props.grid_size,
-            })
-          }
-          this.update_boxes(sum, this.selected).then(() => {
-            if (this.check_game_over()) {
-              Swal.fire({
-                title: "Game Over",
-                text: `You scored ${this.props.parent.score.state.value}`,
-                showConfirmButton: false,
-              }).then(() => {
-                this.props.parent.send_score({
-                  moves: this.moves,
-                  seed: this.initial_seed,
-                  grid_size: this.props.grid_size,
-                })
-                this.props.parent.score.reset()
-
-                this.seed = Date.now()
-                this.initial_seed = this.seed
-                this.moves.length = 0
-                this.init_grid()
-              })
-            }
-          })
-
-          this.clear_selection()
-          this.selected = []
-        })
-      } else {
-        this.clear_selection()
-        this.selected = []
+        }
       }
-    } else {
-      this.clear_selection()
-      this.selected = []
     }
+    return !test_vector.reduce((a, b) => a || b, false)
+  }
 
-    this.setState({ selection_on: false }, () => {
-      if (clear_last) {
-        this.clear_last()
-      }
+  /****************************************************************
+    Utils 
+  ****************************************************************/
+  box_from_client_coordinates(x, y) {
+    const id = document.elementFromPoint(x, y).id
+    const matches = id.match(/ge-[0-9]+-[0-9]+|gec-[0-9]+-[0-9]+/g)
+    return matches !== null
+      ? matches[0]
+          .split("-")
+          .slice(1)
+          .map(x => Number(x))
+      : matches
+  }
+  manhattan_distance(xs, ys) {
+    return zip(xs, ys)
+      .map(p => Math.abs(p[1] - p[0]))
+      .reduce((a, b) => a + b, 0)
+  }
+
+  /****************************************************************
+    Mouse event handlers
+  ****************************************************************/
+  mouse_up(e) {
+    this.eval_selection().then(() => {
+      this.is_mouse_down = false
+      this.clear_selection()
     })
   }
-  get_state() {
-    var vals = {}
-    const range = Array.from(Array(5)).map((_, i) => i)
-    for (const i of range) {
-      for (const j of range) {
-        const val = this.boxes
-          .filter(e => e != null)
-          .filter(e => e.props.i === i && e.props.j === j)
-          .map(e => e.state.value)[0]
-        vals[i.toString() + "-" + j.toString()] = val
+  mouse_down(e) {
+    this.is_mouse_down = true
+    const ij = this.box_from_client_coordinates(e.clientX, e.clientY)
+    if (ij !== null) {
+      this.select(ij[0], ij[1])
+    }
+  }
+  mouse_move(e) {
+    if (this.is_mouse_down) {
+      const ij = this.box_from_client_coordinates(e.clientX, e.clientY)
+      if (ij !== null) {
+        this.select(ij[0], ij[1])
       }
     }
-    return vals
   }
-  check_game_over() {
-    const vals = this.get_state()
-    var is_move = false
-    const range = Array.from(Array(5)).map((_, i) => i)
-    for (const i of range) {
-      for (const j of range) {
-        var neighbor = false
+  mouse_leave(e) {
+    this.clear_selection()
+    this.is_mouse_down = false
+  }
 
-        const a = vals[i.toString() + "-" + j.toString()]
-        for (const dx of [-1, 0, 1]) {
-          for (const dy of [-1, 0, 1]) {
-            if ((dx !== 0 && dy !== 0) || dx === dy) {
-              continue
-            } else {
-              const b = vals[(i + dx).toString() + "-" + (j + dy).toString()]
-              neighbor = a === b || neighbor
-            }
-          }
-        }
-        is_move = is_move || neighbor
-      }
-    }
-    return !is_move
-  }
-  boxFromEvent(e) {
-    const p = [e.touches[0].clientX, e.touches[0].clientY]
-    try {
-      const s = document.elementFromPoint(p[0], p[1])
-      return this.boxes
-        .filter(e => e != null)
-        .filter(e => e.is_this_element(s.id))
-    } catch (err) {
-      console.log(err)
-      return []
+  /****************************************************************
+    Touch event handlers
+  ****************************************************************/
+  touch_start(e) {
+    const ij = this.box_from_client_coordinates(
+      e.touches[0].clientX,
+      e.touches[0].clientY
+    )
+    if (ij !== null) {
+      this.select(ij[0], ij[1])
     }
   }
-  get_last() {
-    return this.boxes.filter(e => e != null).filter(e => e.is_last())
-  }
-  touchMove(e) {
-    const bs = this.boxFromEvent(e)
-    if (bs.length > 0) {
-      bs.forEach(b => (!b.state.last ? b.mobile_enter() : {}))
+  touch_move(e) {
+    const ij = this.box_from_client_coordinates(
+      e.touches[0].clientX,
+      e.touches[0].clientY
+    )
+    if (ij !== null) {
+      this.select(ij[0], ij[1])
     } else {
       this.clear_selection()
-      this.setState({ selection_on: false }, () => {
-        this.clear_last()
-      })
     }
   }
-  touchStart(e) {
-    const bs = this.boxFromEvent(e)
-    if (bs.length > 0) {
-      const b = bs[0]
-      b.setState(
-        {
-          hovered: true,
-          last: true,
-          value: b.state.value,
-        },
-        () => {
-          this.touchDown()
-        }
-      )
-    }
-  }
-  touchEnd() {
-    this.touchUp(true)
-  }
-
-  render() {
-    this.boxes = []
-    return (
-      <div
-        onMouseDown={this.touchDown}
-        onMouseUp={() => {
-          this.touchUp(false)
-        }}
-        ref={b => {
-          this.grid = b
-        }}
-        onTouchStart={this.touchStart}
-        onTouchEnd={this.touchEnd}
-      >
-        {Array.from(Array(this.props.grid_size)).map((_, i) => (
-          <div className="row" key={"a" + i.toString()}>
-            {Array.from(Array(this.props.grid_size)).map((_, j) => (
-              <Box
-                i={i}
-                j={j}
-                parent={this}
-                ref={b => {
-                  this.boxes.push(b)
-                }}
-                key={"box-" + i.toString() + "-" + j.toString()}
-              />
-            ))}
-          </div>
-        ))}
-      </div>
-    )
+  touch_end(e) {
+    this.eval_selection().then(() => {
+      this.clear_selection()
+    })
   }
 }
 
