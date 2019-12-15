@@ -28,31 +28,19 @@ class IndexPage extends React.Component {
       connected: false,
     }
     this.send_score = () => {}
+    this.prompt_nick = this.prompt_nick.bind(this)
   }
   componentDidMount = () => {
-    Swal.fire({
-      title: "Choose a nick",
-      input: "text",
-
-      inputAttributes: {
-        maxlength: 20,
-      },
-      inputValidator: value => {
-        return new Promise(resolve => {
-          if (value.length > 0) {
-            resolve()
-          } else {
-            resolve("Your nick can't be empty!")
-          }
-        })
-      },
-    }).then(nick => {
+    const stored_nick = window.localStorage.getItem("nick")
+    if (stored_nick === null) {
+      this.prompt_nick()
+    } else {
       this.setState({
         endpoint: this.state.endpoint,
-        username: nick.value,
+        username: stored_nick,
         connected: this.state.connected,
       })
-    })
+    }
     const socket = socketIOClient(this.state.endpoint)
     socket.on("connect", () => {
       this.setConnected(true)
@@ -77,6 +65,52 @@ class IndexPage extends React.Component {
         seed: input.seed,
       }
       socket.emit("score", data)
+    }
+  }
+  prompt_nick() {
+    Swal.fire({
+      title: "Choose a nick",
+      input: "text",
+
+      inputAttributes: {
+        maxlength: 20,
+      },
+      inputValidator: value => {
+        return new Promise(resolve => {
+          if (value.length > 0) {
+            resolve()
+          } else {
+            resolve("Your nick can't be empty!")
+          }
+        })
+      },
+    }).then(nick => {
+      window.localStorage.setItem("nick", nick.value)
+      this.setState({
+        endpoint: this.state.endpoint,
+        username: nick.value,
+        connected: this.state.connected,
+      })
+    })
+  }
+  nick_text() {
+    const stored_nick = window.localStorage.getItem("nick")
+    if (stored_nick === null || stored_nick === undefined) {
+      return null
+    } else {
+      return (
+        <>
+          <div class="text-center mb-4" style={{ width: "100%" }}>
+            <button
+              type="button"
+              class="btn btn-primary"
+              onClick={this.prompt_nick}
+            >
+              Change Nick
+            </button>
+          </div>
+        </>
+      )
     }
   }
   setConnected(value) {
@@ -117,6 +151,7 @@ class IndexPage extends React.Component {
             </Col>
           </Row>
           <Row>
+            {this.nick_text()}
             <ScoreFeed
               ref={b => {
                 this.score_feed = b
