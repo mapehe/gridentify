@@ -98,10 +98,10 @@ class IndexPage extends React.Component {
   nick_text() {
     return (
       <>
-        <div class="text-center mb-4" style={{ width: "100%" }}>
+        <div className="text-center mb-4" style={{ width: "100%" }}>
           <button
             type="button"
-            class="btn btn-primary"
+            className="btn btn-primary"
             onClick={this.prompt_nick}
           >
             Change Nick
@@ -156,7 +156,7 @@ class IndexPage extends React.Component {
               connected={this.state.connected}
             />
           </Row>
-          <footer class="mt-5 mb-4 text-center" style={{ width: "100%" }}>
+          <footer className="mt-5 mb-4 text-center" style={{ width: "100%" }}>
             This site uses cookies. <Link to="/privacy">Learn more.</Link>
           </footer>
         </Container>

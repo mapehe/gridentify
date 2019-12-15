@@ -1,5 +1,6 @@
 import React from "react"
 import Box from "./box"
+import Swal from "sweetalert2"
 
 class Grid extends React.Component {
   constructor(props) {
@@ -125,20 +126,26 @@ class Grid extends React.Component {
           }
           this.update_boxes(sum, this.selected).then(() => {
             if (this.check_game_over()) {
-              Promise.all(
-                this.boxes.filter(e => e != null).map(e => e.init_value())
-              ).then(() => {
-                this.props.parent.send_score({
-                  initial_state: this.initial_status,
-                  moves: this.moves,
-                  seed: this.initial_seed,
-                })
-                this.props.parent.score.reset()
+              Swal.fire({
+                title: "Game Over",
+                text: `You scored ${this.props.parent.score.state.value}`,
+                showConfirmButton: false,
+              }).then(() => {
+                Promise.all(
+                  this.boxes.filter(e => e != null).map(e => e.init_value())
+                ).then(() => {
+                  this.props.parent.send_score({
+                    initial_state: this.initial_status,
+                    moves: this.moves,
+                    seed: this.initial_seed,
+                  })
+                  this.props.parent.score.reset()
 
-                this.seed = Date.now()
-                this.initial_seed = this.seed
-                this.moves.length = 0
-                this.initial_status = this.get_state()
+                  this.seed = Date.now()
+                  this.initial_seed = this.seed
+                  this.moves.length = 0
+                  this.initial_status = this.get_state()
+                })
               })
             }
           })
