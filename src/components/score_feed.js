@@ -131,7 +131,7 @@ class ScoreFeed extends React.Component {
         </Container>
       </>
     ) : (
-      <div class="text-center" style={{ width: "100%" }}>
+      <div className="text-center" style={{ width: "100%" }}>
         <p>Couldn't get the scores right now.</p>
         <p>Sorry :(</p>
       </div>

@@ -125,18 +125,21 @@ class Grid extends React.Component {
           }
           this.update_boxes(sum, this.selected).then(() => {
             if (this.check_game_over()) {
-              this.props.parent.send_score({
-                initial_state: this.initial_status,
-                moves: this.moves,
-                seed: this.initial_seed,
-              })
-              this.boxes.filter(e => e != null).forEach(e => e.init_value())
-              this.props.parent.score.reset()
+              Promise.all(
+                this.boxes.filter(e => e != null).map(e => e.init_value())
+              ).then(() => {
+                this.props.parent.send_score({
+                  initial_state: this.initial_status,
+                  moves: this.moves,
+                  seed: this.initial_seed,
+                })
+                this.props.parent.score.reset()
 
-              this.seed = Date.now()
-              this.initial_seed = this.seed
-              this.moves = []
-              this.initial_status = this.get_state()
+                this.seed = Date.now()
+                this.initial_seed = this.seed
+                this.moves.length = 0
+                this.initial_status = this.get_state()
+              })
             }
           })
 
