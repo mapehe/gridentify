@@ -85,7 +85,9 @@ class IndexPage extends React.Component {
         })
       },
     }).then(nick => {
-      window.localStorage.setItem("nick", nick.value)
+      if (typeof window !== "undefined") {
+        window.localStorage.setItem("nick", nick.value)
+      }
       this.setState({
         endpoint: this.state.endpoint,
         username: nick.value,
@@ -94,24 +96,19 @@ class IndexPage extends React.Component {
     })
   }
   nick_text() {
-    const stored_nick = window.localStorage.getItem("nick")
-    if (stored_nick === null || stored_nick === undefined) {
-      return null
-    } else {
-      return (
-        <>
-          <div class="text-center mb-4" style={{ width: "100%" }}>
-            <button
-              type="button"
-              class="btn btn-primary"
-              onClick={this.prompt_nick}
-            >
-              Change Nick
-            </button>
-          </div>
-        </>
-      )
-    }
+    return (
+      <>
+        <div class="text-center mb-4" style={{ width: "100%" }}>
+          <button
+            type="button"
+            class="btn btn-primary"
+            onClick={this.prompt_nick}
+          >
+            Change Nick
+          </button>
+        </div>
+      </>
+    )
   }
   setConnected(value) {
     this.setState({
