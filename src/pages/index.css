@@ -1,10 +1,13 @@
-@import url("https://fonts.googleapis.com/css?family=Lilita+One|Source+Sans+Pro&display=swap");
+@import url("https://fonts.googleapis.com/css?family=Lilita+One|Source+Sans+Pro|Rubik+Mono+One&display=swap");
 
 .grid {
   margin: 0 auto;
   font: 150%/1.45em georgia, serif;
   max-width: 60vh;
   max-height: 60vh;
+}
+#main_title {
+  font-family: "Rubik Mono One", sans-serif;
 }
 @media only screen and (max-width: 600px) {
   .grid {
