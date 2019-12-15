@@ -60,9 +60,9 @@ class IndexPage extends React.Component {
       const data = {
         score: this.score.state.value,
         username: this.state.username,
-        initial_state: input.initial_state,
         moves: input.moves,
         seed: input.seed,
+        grid_size: input.grid_size,
       }
       socket.emit("score", data)
     }

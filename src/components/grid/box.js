@@ -22,16 +22,17 @@ class Box extends React.Component {
   }
   constructor(props) {
     super(props)
-    this.state = { hovered: false, last: false, value: this.random_value() }
+    this.state = { hovered: false, last: false, value: 0 }
   }
 
-  init_value = () => {
+  init_value = (vals, n) => {
+    const val = vals[n * this.props.i + this.props.j]
     return new Promise(resolve => {
       this.setState(
         {
           hovered: this.state.hovered,
           last: this.state.last,
-          value: this.random_value(),
+          value: val,
         },
         resolve
       )

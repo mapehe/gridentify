@@ -19,7 +19,6 @@ class Grid extends React.Component {
   moves = []
   seed = null
   initial_seed = null
-  initial_status = null
   grid = null
   componentDidMount() {
     try {
@@ -34,7 +33,7 @@ class Grid extends React.Component {
     } catch (e) {
       console.log(e)
     }
-    this.initial_status = this.get_state()
+    this.init_grid()
   }
   check_leave() {
     if (
@@ -100,6 +99,13 @@ class Grid extends React.Component {
       .filter(e => e != null)
     return arr.length > 0 ? arr : null
   }
+  init_grid() {
+    const n = this.props.grid_size
+    const vals = this.random_array(n ** 2)
+    return Promise.all(
+      this.boxes.filter(e => e != null).map(e => e.init_value(vals, n))
+    )
+  }
   touchUp(clear_last) {
     if (
       this.boxes.filter(e => e != null).filter(e => e.state.hovered).length > 1
@@ -119,9 +125,9 @@ class Grid extends React.Component {
 
           if (activeEnv == "development") {
             this.props.parent.send_score({
-              initial_state: this.initial_status,
               moves: this.moves,
               seed: this.initial_seed,
+              grid_size: this.props.grid_size,
             })
           }
           this.update_boxes(sum, this.selected).then(() => {
@@ -131,21 +137,17 @@ class Grid extends React.Component {
                 text: `You scored ${this.props.parent.score.state.value}`,
                 showConfirmButton: false,
               }).then(() => {
-                Promise.all(
-                  this.boxes.filter(e => e != null).map(e => e.init_value())
-                ).then(() => {
-                  this.props.parent.send_score({
-                    initial_state: this.initial_status,
-                    moves: this.moves,
-                    seed: this.initial_seed,
-                  })
-                  this.props.parent.score.reset()
-
-                  this.seed = Date.now()
-                  this.initial_seed = this.seed
-                  this.moves.length = 0
-                  this.initial_status = this.get_state()
+                this.props.parent.send_score({
+                  moves: this.moves,
+                  seed: this.initial_seed,
+                  grid_size: this.props.grid_size,
                 })
+                this.props.parent.score.reset()
+
+                this.seed = Date.now()
+                this.initial_seed = this.seed
+                this.moves.length = 0
+                this.init_grid()
               })
             }
           })
