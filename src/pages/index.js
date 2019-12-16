@@ -13,6 +13,10 @@ import Row from "react-bootstrap/Row"
 import { isMobile } from "react-device-detect"
 import Swal from "sweetalert2"
 import { Link } from "gatsby"
+const Ajv = require("ajv")
+const ajv = new Ajv({
+  allErrors: true,
+})
 
 const GRID_SIZE = 5
 
@@ -65,6 +69,30 @@ class IndexPage extends React.Component {
         grid_size: input.grid_size,
       }
       socket.emit("score", data)
+    }
+  }
+  sanitize_score(data) {
+    const schema = {
+      type: "object",
+      required: ["score", "username"],
+      properties: {
+        username: {
+          type: "string",
+          minLength: 1,
+          maxLength: 20,
+        },
+        score: {
+          type: "number",
+        },
+      },
+      additionalProperties: false,
+    }
+    const validate = ajv.compile(schema)
+    const valid = validate(data)
+    if (valid) {
+      return data
+    } else {
+      throw "Invalid score schema."
     }
   }
   prompt_nick() {
