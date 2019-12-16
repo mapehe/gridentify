@@ -39,6 +39,10 @@
 }
 .selected {
   background-color: red !important;
+  transition: 0s 2s, 0.05s linear;
+}
+.not-selected {
+  transition: 0s 2s, 0.05s linear;
 }
 .box:after {
   content: "";

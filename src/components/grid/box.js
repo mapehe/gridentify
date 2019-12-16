@@ -2,7 +2,7 @@ import React from "react"
 import { isMobile } from "react-device-detect"
 
 const box_class = selected => {
-  return "box " + (selected ? "selected " : "")
+  return "box " + (selected ? "selected " : "not-selected")
 }
 
 class Box extends React.Component {
