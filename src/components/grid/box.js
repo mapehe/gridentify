@@ -9,24 +9,15 @@ class Box extends React.Component {
   constructor(props) {
     super(props)
   }
-  background_color() {
-    return (
-      "rgb(" +
-      (255 - Math.min(this.props.value * 80, 50)) +
-      "," +
-      (255 - Math.min(this.props.value * 20, 100)) +
-      "," +
-      255 +
-      ")"
-    )
-  }
   render() {
+    if (this.ref !== undefined) {
+      this.ref.style = `background-color: ${this.props.color}`
+    }
     return (
       <>
         <div
           id={`ge-${this.props.i}-${this.props.j}`}
           className={box_class(this.props.selected)}
-          style={{ backgroundColor: this.background_color() }}
           ref={b => {
             this.ref = b
           }}

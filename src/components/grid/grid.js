@@ -41,6 +41,17 @@ class Grid extends React.Component {
     )
   }
   render() {
+    const box_color = value => {
+      return (
+        "rgb(" +
+        (255 - Math.min(value * 80, 50)) +
+        "," +
+        (255 - Math.min(value * 20, 100)) +
+        "," +
+        255 +
+        ")"
+      )
+    }
     return (
       <div
         onMouseDown={this.mouse_down}
@@ -64,6 +75,7 @@ class Grid extends React.Component {
                 selected={this.is_selected(i, j)}
                 grid={this}
                 value={this.state.grid[i][j]}
+                color={box_color(this.state.grid[i][j])}
               />
             ))}
           </div>
