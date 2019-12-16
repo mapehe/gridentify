@@ -28,7 +28,7 @@ class TopScoreFeed extends React.Component {
   render() {
     return (
       <>
-        <Card className="">
+        <Card style={{ height: "100%" }}>
           <Card.Header style={{ backgroundColor: "#f9edff" }}>
             <b>{this.props.title}</b>
           </Card.Header>
