@@ -185,7 +185,8 @@ class IndexPage extends React.Component {
             />
           </Row>
           <footer className="mt-5 mb-4 text-center" style={{ width: "100%" }}>
-            This site uses cookies. <Link to="/privacy">Learn more.</Link>
+            <p>This site uses cookies. <Link to="/privacy">Learn more.</Link></p>
+	    <p style={{fontSize: "12px" }}>&#103;&#114;&#105;&#100;&#101;&#110;&#116;&#105;&#111;&#064;&#103;&#109;&#097;&#105;&#108;&#046;&#099;&#111;&#109;</p>
           </footer>
         </Container>
       </Layout>
