@@ -54,11 +54,17 @@ class IndexPage extends React.Component {
     })
     socket.on("score", data => {
       this.setConnected(true)
-      this.receive_score(data)
+      const sanitized = this.sanitize_score(data)
+      if (sanitized !== null) {
+        this.receive_score(sanitized)
+      }
     })
     socket.on("record", data => {
       this.setConnected(true)
-      this.receive_record(data)
+      const sanitized = this.sanitize_score(data)
+      if (sanitized !== null) {
+        this.receive_record(sanitized)
+      }
     })
     this.send_score = input => {
       return (this.state.username === undefined ||
@@ -102,7 +108,7 @@ class IndexPage extends React.Component {
     if (valid) {
       return data
     } else {
-      throw "Invalid score schema."
+      return null
     }
   }
   prompt_nick(title, text = "") {

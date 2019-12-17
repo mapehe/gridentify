@@ -11,7 +11,7 @@ import "noty/lib/noty.css"
 import "noty/lib/themes/semanticui.css"
 import $ from "jquery"
 
-const noty_count = !isMobile ? 10 : 3
+const noty_count = !isMobile ? 10 : 2
 Noty.setMaxVisible(noty_count)
 
 class TopScoreElement extends React.Component {
