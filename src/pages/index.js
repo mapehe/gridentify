@@ -37,7 +37,7 @@ class IndexPage extends React.Component {
   componentDidMount = () => {
     const stored_nick = window.localStorage.getItem("nick")
     if (stored_nick === null) {
-      this.prompt_nick()
+      this.prompt_nick("Choose a nick")
     } else {
       this.setState({
         endpoint: this.state.endpoint,
@@ -61,14 +61,24 @@ class IndexPage extends React.Component {
       this.receive_record(data)
     })
     this.send_score = input => {
-      const data = {
-        score: this.score.state.value,
-        username: this.state.username,
-        moves: input.moves,
-        seed: input.seed,
-        grid_size: input.grid_size,
-      }
-      socket.emit("score", data)
+      return (this.state.username === undefined ||
+      this.state.username === null ||
+      this.state.username === "undefined"
+        ? this.prompt_nick(
+            "Choose a nick",
+            "Your score can't be sent without a nick."
+          )
+        : Promise.resolve(1)
+      ).then(() => {
+        const data = {
+          score: this.score.state.value,
+          username: this.state.username,
+          moves: input.moves,
+          seed: input.seed,
+          grid_size: input.grid_size,
+        }
+        socket.emit("score", data)
+      })
     }
   }
   sanitize_score(data) {
@@ -95,9 +105,10 @@ class IndexPage extends React.Component {
       throw "Invalid score schema."
     }
   }
-  prompt_nick() {
-    Swal.fire({
-      title: "Choose a nick",
+  prompt_nick(title, text = "") {
+    return Swal.fire({
+      title: title,
+      text: text,
       input: "text",
 
       inputAttributes: {
@@ -130,7 +141,9 @@ class IndexPage extends React.Component {
           <button
             type="button"
             className="btn btn-primary"
-            onClick={this.prompt_nick}
+            onClick={() => {
+              this.prompt_nick("Choose a new nick")
+            }}
           >
             Change Nick
           </button>

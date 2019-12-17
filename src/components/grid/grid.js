@@ -211,17 +211,19 @@ class Grid extends React.Component {
               text: `You scored ${this.props.parent.score.state.value}`,
               showConfirmButton: false,
             }).then(() => {
-              this.props.parent.send_score({
-                moves: this.moves,
-                seed: this.initial_seed,
-                grid_size: this.props.grid_size,
-              })
-              this.props.parent.score.reset()
-
-              this.seed = Date.now()
-              this.initial_seed = this.seed
-              this.moves.length = 0
-              this.update_grid(this.init_grid(this.props.grid_size))
+              this.props.parent
+                .send_score({
+                  moves: this.moves,
+                  seed: this.initial_seed,
+                  grid_size: this.props.grid_size,
+                })
+                .then(() => {
+                  this.props.parent.score.reset()
+                  this.seed = Date.now()
+                  this.initial_seed = this.seed
+                  this.moves.length = 0
+                  this.update_grid(this.init_grid(this.props.grid_size))
+                })
             })
           }
         })
