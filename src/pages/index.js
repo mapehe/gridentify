@@ -60,11 +60,7 @@ class IndexPage extends React.Component {
       }
     })
     socket.on("record", data => {
-      this.setConnected(true)
-      const sanitized = this.sanitize_score(data)
-      if (sanitized !== null) {
-        this.receive_record(sanitized)
-      }
+      this.receive_record(data)
     })
     this.send_score = input => {
       return (this.state.username === undefined ||
