@@ -11,7 +11,7 @@ const PrivacyPage = () => (
     <Container className="p-5">
       <h2>Privacy Policy</h2>
       <p className="mt-5">
-        Some user data is collected on gridentio.com. This data includes the
+        Some user data is collected on gridentify.com. This data includes the
         following:
       </p>
       <ul>
