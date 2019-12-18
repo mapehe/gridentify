@@ -262,9 +262,6 @@ class IndexPage extends React.Component {
             <p>
               This site uses cookies. <Link to="/privacy">Learn more.</Link>
             </p>
-            <p style={{ fontSize: "12px" }}>
-              &#103;&#114;&#105;&#100;&#101;&#110;&#116;&#105;&#111;&#064;&#103;&#109;&#097;&#105;&#108;&#046;&#099;&#111;&#109;
-            </p>
           </footer>
         </Container>
       </Layout>
