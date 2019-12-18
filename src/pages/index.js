@@ -20,6 +20,48 @@ const ajv = new Ajv({
 
 const GRID_SIZE = 5
 
+const score_schema = {
+  type: "object",
+  required: ["score", "username"],
+  properties: {
+    username: {
+      type: "string",
+      minLength: 1,
+      maxLength: 20,
+    },
+    score: {
+      type: "number",
+    },
+  },
+  additionalProperties: false,
+}
+const validate_score = ajv.compile(score_schema)
+
+const record_schema = {
+  type: "object",
+  required: ["daily", "all_time", "date"],
+  properties: {
+    daily: {
+      type: "array",
+      minItems: 5,
+      maxItems: 5,
+      items: score_schema,
+    },
+    all_time: {
+      type: "array",
+      minItems: 5,
+      maxItems: 5,
+      items: score_schema,
+    },
+    date: {
+      type: "string",
+      format: "date-time",
+    },
+  },
+  additionalProperties: false,
+}
+const validate_record = ajv.compile(record_schema)
+
 class IndexPage extends React.Component {
   score = null
   score_feed = null
@@ -30,12 +72,14 @@ class IndexPage extends React.Component {
       endpoint: process.env.BACKEND_ENDPOINT,
       username: "username",
       connected: false,
+      mute_live: false,
     }
     this.send_score = () => {}
     this.prompt_nick = this.prompt_nick.bind(this)
   }
   componentDidMount = () => {
     const stored_nick = window.localStorage.getItem("nick")
+    const stored_mute = window.localStorage.getItem("mute_live") === "true"
     if (stored_nick === null) {
       this.prompt_nick("Choose a nick")
     } else {
@@ -43,6 +87,7 @@ class IndexPage extends React.Component {
         endpoint: this.state.endpoint,
         username: stored_nick,
         connected: this.state.connected,
+        mute_live: stored_mute,
       })
     }
     const socket = socketIOClient(this.state.endpoint)
@@ -53,14 +98,14 @@ class IndexPage extends React.Component {
       this.setConnected(false)
     })
     socket.on("score", data => {
-      this.setConnected(true)
-      const sanitized = this.sanitize_score(data)
-      if (sanitized !== null) {
-        this.receive_score(sanitized)
+      if (validate_score(data)) {
+        this.receive_score(data)
       }
     })
     socket.on("record", data => {
-      this.receive_record(data)
+      if (validate_record(data)) {
+        this.receive_record(data)
+      } else console.log(ajv.errorsText())
     })
     this.send_score = input => {
       return (this.state.username === undefined ||
@@ -81,30 +126,6 @@ class IndexPage extends React.Component {
         }
         socket.emit("score", data)
       })
-    }
-  }
-  sanitize_score(data) {
-    const schema = {
-      type: "object",
-      required: ["score", "username"],
-      properties: {
-        username: {
-          type: "string",
-          minLength: 1,
-          maxLength: 20,
-        },
-        score: {
-          type: "number",
-        },
-      },
-      additionalProperties: false,
-    }
-    const validate = ajv.compile(schema)
-    const valid = validate(data)
-    if (valid) {
-      return data
-    } else {
-      return null
     }
   }
   prompt_nick(title, text = "") {
@@ -133,31 +154,68 @@ class IndexPage extends React.Component {
         endpoint: this.state.endpoint,
         username: nick.value,
         connected: this.state.connected,
+        mute_live: this.state.mute_live,
       })
     })
   }
-  nick_text() {
-    return (
+  options() {
+    return this.state.connected ? (
       <>
-        <div className="text-center mb-4" style={{ width: "100%" }}>
-          <button
-            type="button"
-            className="btn btn-primary"
-            onClick={() => {
-              this.prompt_nick("Choose a new nick")
-            }}
-          >
-            Change Nick
-          </button>
+        <div className="text-center mt-5" style={{ width: "100%" }}>
+          <p>
+            <button
+              type="button"
+              className="btn btn-primary"
+              onClick={() => {
+                this.prompt_nick("Choose a new nick")
+              }}
+            >
+              Change Nick
+            </button>
+          </p>
+          <p>
+            <button
+              type="button"
+              className={
+                "btn btn-danger " + (this.state.mute_live ? "active" : "")
+              }
+              onClick={e => {
+                this.toggle_mute_live().then(() => {
+                  if (typeof window !== "undefined") {
+                    window.localStorage.setItem(
+                      "mute_live",
+                      this.state.mute_live
+                    )
+                  }
+                })
+              }}
+            >
+              Mute Live Scores
+            </button>
+          </p>
         </div>
       </>
-    )
+    ) : null
   }
   setConnected(value) {
     this.setState({
       endpoint: this.state.endpoint,
       username: this.state.username,
       connected: value,
+      mute_live: this.state.mute_live,
+    })
+  }
+  toggle_mute_live() {
+    return new Promise(resolve => {
+      this.setState(
+        {
+          endpoint: this.state.endpoint,
+          username: this.state.username,
+          connected: this.state.connected,
+          mute_live: !this.state.mute_live,
+        },
+        resolve
+      )
     })
   }
   receive_score(data) {
@@ -191,14 +249,15 @@ class IndexPage extends React.Component {
             </Col>
           </Row>
           <Row>
-            {this.nick_text()}
             <ScoreFeed
               ref={b => {
                 this.score_feed = b
               }}
               connected={this.state.connected}
+              mute_live={this.state.mute_live}
             />
           </Row>
+          {this.options()}
           <footer className="mt-5 mb-4 text-center" style={{ width: "100%" }}>
             <p>
               This site uses cookies. <Link to="/privacy">Learn more.</Link>

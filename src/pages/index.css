@@ -23,6 +23,9 @@
 #main_container {
   max-width: 70vh;
 }
+button:active {
+  border-style: outset;
+}
 
 .box {
   flex: 1 0 auto;

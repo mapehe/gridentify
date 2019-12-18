@@ -45,45 +45,43 @@ class ScoreFeed extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      daily_top: [...Array(5).keys()].map(e => {
-        return { username: "anon", score: "0" }
-      }),
-      all_top: [...Array(5).keys()].map(e => {
-        return { username: "anon", score: "0" }
-      }),
+      daily_top: null,
+      all_top: null,
     }
   }
   new_score(data) {
-    const id1 = `noty-${this.id_counter}-username`
-    const id2 = `noty-${this.id_counter}-score`
-    const div_id = `noty-${this.id_counter}-container`
-    const n = new Noty({
-      text: `<div id="${div_id}"><b id="${id1}"></b> <span id="${id2}"></span></div>`,
-      closeWith: ["click"],
-      type: "info",
-      theme: "semanticui",
-      timeout: isMobile ? 2000 : false,
-    }).on("afterShow", () => {
-      try {
-        $(`#${div_id}`).toggle()
-        document.getElementById(id1).innerText = data.username
-        document.getElementById(id2).innerText = data.score
-        $(`#${div_id}`).slideDown(200)
-      } catch (e) {
-        console.log(e)
+    if (!this.props.mute_live) {
+      const id1 = `noty-${this.id_counter}-username`
+      const id2 = `noty-${this.id_counter}-score`
+      const div_id = `noty-${this.id_counter}-container`
+      const n = new Noty({
+        text: `<div id="${div_id}"><b id="${id1}"></b> <span id="${id2}"></span></div>`,
+        closeWith: ["click"],
+        type: "info",
+        theme: "semanticui",
+        timeout: isMobile ? 2000 : false,
+      }).on("afterShow", () => {
+        try {
+          $(`#${div_id}`).toggle()
+          document.getElementById(id1).innerText = data.username
+          document.getElementById(id2).innerText = data.score
+          $(`#${div_id}`).slideDown(200)
+        } catch (e) {
+          console.log(e)
+        }
+      })
+      this.notys.push(n)
+      n.show()
+      if (this.notys.length > noty_count) {
+        this.notys
+          .slice(0, Math.max(this.notys.length - noty_count, 0))
+          .map(n => {
+            n.close()
+            return 0
+          })
       }
-    })
-    this.notys.push(n)
-    n.show()
-    if (this.notys.length > noty_count) {
-      this.notys
-        .slice(0, Math.max(this.notys.length - noty_count, 0))
-        .map(n => {
-          n.close()
-          return 0
-        })
+      this.notys = this.notys.slice(Math.max(this.notys.length - noty_count, 0))
     }
-    this.notys = this.notys.slice(Math.max(this.notys.length - noty_count, 0))
     this.id_counter += 1
   }
   update_records(data) {
@@ -94,7 +92,12 @@ class ScoreFeed extends React.Component {
   }
 
   render() {
-    return this.props.connected ? (
+    if (this.props.mute_live) {
+      Noty.closeAll()
+    }
+    return this.props.connected &&
+      this.state.daily_top !== null &&
+      this.state.all_top !== null ? (
       <>
         <Container className="scoreContainer">
           <Container
@@ -130,12 +133,7 @@ class ScoreFeed extends React.Component {
           </Container>
         </Container>
       </>
-    ) : (
-      <div className="text-center" style={{ width: "100%" }}>
-        <p>Couldn't get the scores right now.</p>
-        <p>Sorry :(</p>
-      </div>
-    )
+    ) : null
   }
 }
 
