@@ -263,6 +263,12 @@ class IndexPage extends React.Component {
             <p>
               This site uses cookies. <Link to="/privacy">Learn more.</Link>
             </p>
+            <p style={{ fontSize: "12px" }}>
+              Powered by your friends at{" "}
+              <a href="https://three.consulting">Three Point Consulting</a>. Get
+              in touch:
+              &#103;&#114;&#105;&#100;&#101;&#110;&#116;&#105;&#102;&#121;&#064;&#116;&#104;&#114;&#101;&#101;&#046;&#099;&#111;&#110;&#115;&#117;&#108;&#116;&#105;&#110;&#103;
+            </p>
           </footer>
         </Container>
       </Layout>
