@@ -177,7 +177,8 @@ class IndexPage extends React.Component {
             <button
               type="button"
               className={
-                "btn btn-danger " + (this.state.mute_live ? "active" : "")
+                "btn " +
+                (this.state.mute_live ? "btn-danger" : "btn-outline-danger")
               }
               onClick={e => {
                 this.toggle_mute_live().then(() => {
