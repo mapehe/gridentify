@@ -164,41 +164,39 @@ class IndexPage extends React.Component {
         <Row className="text-center mt-5 mb-5" style={{ width: "100%" }}>
           <Col sm={1}></Col>
           <Col className="text-right">
-            <p>
-              <button
-                type="button"
-                className="btn btn-primary"
-                onClick={() => {
-                  this.prompt_nick("Choose a new nick")
-                }}
-              >
-                Change Nick
-              </button>
-            </p>
+            <button
+              type="button"
+              className="btn btn-primary"
+              style={{ height: "100%" }}
+              onClick={() => {
+                this.prompt_nick("Choose a new nick")
+              }}
+            >
+              Change Nick
+            </button>
           </Col>
           <Col className="text-left">
-            <p>
-              <button
-                id="mute_button"
-                type="button"
-                className={
-                  "btn " +
-                  (this.state.mute_live ? "btn-danger" : "btn-outline-danger")
-                }
-                onClick={e => {
-                  this.toggle_mute_live().then(() => {
-                    if (typeof window !== "undefined") {
-                      window.localStorage.setItem(
-                        "mute_live",
-                        this.state.mute_live
-                      )
-                    }
-                  })
-                }}
-              >
-                Mute Live Scores
-              </button>
-            </p>
+            <button
+              id="mute_button"
+              type="button"
+              style={{ height: "100%" }}
+              className={
+                "btn " +
+                (this.state.mute_live ? "btn-danger" : "btn-outline-danger")
+              }
+              onClick={e => {
+                this.toggle_mute_live().then(() => {
+                  if (typeof window !== "undefined") {
+                    window.localStorage.setItem(
+                      "mute_live",
+                      this.state.mute_live
+                    )
+                  }
+                })
+              }}
+            >
+              Mute Live Scores
+            </button>
           </Col>
           <Col sm={1}></Col>
         </Row>

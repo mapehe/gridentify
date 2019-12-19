@@ -8,6 +8,7 @@
 }
 #main_title {
   font-family: "Rubik Mono One", sans-serif;
+  font-size: 2rem;
 }
 .btn-outline-danger {
   background-color: transparent !important;
