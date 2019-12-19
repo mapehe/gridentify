@@ -161,40 +161,47 @@ class IndexPage extends React.Component {
   options() {
     return this.state.connected ? (
       <>
-        <div className="text-center mt-5" style={{ width: "100%" }}>
-          <p>
-            <button
-              type="button"
-              className="btn btn-primary"
-              onClick={() => {
-                this.prompt_nick("Choose a new nick")
-              }}
-            >
-              Change Nick
-            </button>
-          </p>
-          <p>
-            <button
-              type="button"
-              className={
-                "btn " +
-                (this.state.mute_live ? "btn-danger" : "btn-outline-danger")
-              }
-              onClick={e => {
-                this.toggle_mute_live().then(() => {
-                  if (typeof window !== "undefined") {
-                    window.localStorage.setItem(
-                      "mute_live",
-                      this.state.mute_live
-                    )
-                  }
-                })
-              }}
-            >
-              Mute Live Scores
-            </button>
-          </p>
-        </div>
+        <Row className="text-center mt-5 mb-5" style={{ width: "100%" }}>
+          <Col sm={1}></Col>
+          <Col className="text-right">
+            <p>
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={() => {
+                  this.prompt_nick("Choose a new nick")
+                }}
+              >
+                Change Nick
+              </button>
+            </p>
+          </Col>
+          <Col className="text-left">
+            <p>
+              <button
+                id="mute_button"
+                type="button"
+                className={
+                  "btn " +
+                  (this.state.mute_live ? "btn-danger" : "btn-outline-danger")
+                }
+                onClick={e => {
+                  this.toggle_mute_live().then(() => {
+                    if (typeof window !== "undefined") {
+                      window.localStorage.setItem(
+                        "mute_live",
+                        this.state.mute_live
+                      )
+                    }
+                  })
+                }}
+              >
+                Mute Live Scores
+              </button>
+            </p>
+          </Col>
+          <Col sm={1}></Col>
+        </Row>
       </>
     ) : null
   }
@@ -237,6 +244,7 @@ class IndexPage extends React.Component {
       <Layout>
         <Container id="main_container" className="pt-5">
           <Intro />
+          {this.options()}
           <Row id="grid_row">
             <Col style={{ textAlign: "center" }}>
               <div className="grid">
@@ -258,7 +266,6 @@ class IndexPage extends React.Component {
               mute_live={this.state.mute_live}
             />
           </Row>
-          {this.options()}
           <footer className="mt-5 mb-4 text-center" style={{ width: "100%" }}>
             <p>
               This site uses cookies. <Link to="/privacy">Learn more.</Link>

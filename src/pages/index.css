@@ -9,6 +9,10 @@
 #main_title {
   font-family: "Rubik Mono One", sans-serif;
 }
+.btn-outline-danger {
+  background-color: transparent !important;
+  color: red !important;
+}
 @media only screen and (max-width: 600px) {
   .grid {
     display: inline;
